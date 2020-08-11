@@ -61,6 +61,7 @@
     "react-modal": "^3.11.2",
     "react-scripts": "3.4.1",
     "react-virtualized": "^9.22.0",
+    "semantic-release": "^17.0.4",
     "typescript": "~3.7.2"
   },
   "husky": {
