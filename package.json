@@ -2,7 +2,7 @@
   "name": "@arkhn/ui",
   "version": "0.1.0",
   "private": false,
-  "description": "Open source typescript library for UI components",
+  "description": "Open source typescript library for ReactJs UI components",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {},
