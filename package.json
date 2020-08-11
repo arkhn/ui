@@ -64,7 +64,7 @@
     "react-scripts": "3.4.1",
     "react-virtualized": "^9.22.0",
     "semantic-release": "^17.0.4",
-    "typescript": "~3.7.2",
+    "typescript": "^3.9.7",
     "validate-commit": "^3.4.0"
   },
   "husky": {
