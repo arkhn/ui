@@ -3,6 +3,6 @@ export {
   SelectableTableProps,
   TableDataType,
   TableHeadProps,
-  TableToolbarProps,
+  TableToolbarProps
 } from "./SelectableTable/SelectableTable";
 export { VirtualizedCarouselProps } from "./VirtualizedCarousel/VirtualizedCarousel";
