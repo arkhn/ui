@@ -167,7 +167,7 @@ const TableToolbar = (props: TableToolbarProps) => {
   );
 };
 
-const SelectableTable = (props: SelectableTableProps) => {
+const SelectableTable: React.FC<SelectableTableProps> = (props) => {
   const classes = useStyles();
   const {
     rows,
