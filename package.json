@@ -52,6 +52,7 @@
     "@types/react-virtualized": "^9.21.10",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",
+    "conventional-changelog-eslint": "^3.0.4",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
@@ -62,7 +63,8 @@
     "react-scripts": "3.4.1",
     "react-virtualized": "^9.22.0",
     "semantic-release": "^17.0.4",
-    "typescript": "~3.7.2"
+    "typescript": "~3.7.2",
+    "validate-commit": "^3.4.0"
   },
   "husky": {
     "hooks": {
