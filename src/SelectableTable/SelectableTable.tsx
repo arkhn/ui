@@ -18,30 +18,54 @@ import {
 } from "@material-ui/core";
 import EditInput from "../EditInput/EditInput";
 
-export interface TableDataType {
-  name: string;
-  id: string;
-  documents: any[];
-}
+export type SelectableTableColumn = {
+  /**
+   * Label displayed on the column head
+   */
+  label: string;
+  /**
+   * Key of the row attribute the column is linked to
+   */
+  rowAttributeKey: TableDataTypeKeys;
+  /**
+   * Whether displaying the attribute with an input or not
+   */
+  input?: boolean;
+  /**
+   * Align attribute set to the TableCell from "@material-ui/core" library
+   */
+  align?: "left" | "right" | "inherit" | "center" | "justify";
+  /**
+   * Padding attribute set to the TableCell from "@material-ui/core" library
+   */
+  padding?: "none" | "checkbox" | "default";
+};
 
-export interface TableHeadProps {
+export type SelectableTableButton = {
+  /**
+   * Label displayed in the button
+   */
+  label: string;
+  /**
+   * Disabled attribute set to the Button component from "@material-ui/core" library
+   */
+  disabled?: boolean;
+  /**
+   * onClick function called when the user clicks on the button
+   */
+  onClick: (ids: string[]) => void;
+  /**
+   * Variant attribute set to the Button component from "@material-ui/core" library
+   */
+  variant?: "text" | "outlined" | "contained";
+};
+
+interface TableHeadProps {
   classes: ReturnType<typeof useStyles>;
   numSelected: number;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   rowCount: number;
-}
-
-export interface TableToolbarProps {
-  selectedClusters: TableDataType[];
-  onMergeClick: (clusterIds: string[]) => void;
-}
-
-export interface SelectableTableProps {
-  rows: TableDataType[];
-  onMergeClick: (clusterIds: string[]) => void;
-  selectedRowId: string | null;
-  onRowClick: (clusterId: string) => void;
-  onEditClusterName: (clusterId: string, clusterName: string) => void;
+  columns: SelectableTableColumn[];
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -60,7 +84,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const SelectableTableHead = (props: TableHeadProps) => {
-  const { classes, numSelected, onSelectAllClick, rowCount } = props;
+  const { classes, numSelected, onSelectAllClick, rowCount, columns } = props;
   return (
     <TableHead>
       <TableRow>
@@ -69,15 +93,18 @@ const SelectableTableHead = (props: TableHeadProps) => {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            inputProps={{ "aria-label": "select all clusters" }}
+            inputProps={{ "aria-label": "select all rows" }}
           />
         </TableCell>
-        <TableCell align="left" padding="none">
-          {`Clusters`}
-        </TableCell>
-        <TableCell align="right" padding="default">
-          {`Number of documents`}
-        </TableCell>
+        {columns.map((column) => (
+          <TableCell
+            align={column.align}
+            padding={column.padding}
+            key={`head ${column.label}`}
+          >
+            {column.label}
+          </TableCell>
+        ))}
       </TableRow>
     </TableHead>
   );
@@ -107,10 +134,21 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const TableToolbar = (props: TableToolbarProps) => {
+interface TableToolbarProps {
+  buttons: SelectableTableButton[];
+  tableTitle: string;
+  selectedRows: TableDataType[];
+  onRowsSelectedDynamicTitle: string;
+}
+
+const TableToolbar: React.FC<TableToolbarProps> = ({
+  selectedRows,
+  tableTitle,
+  buttons,
+  onRowsSelectedDynamicTitle,
+}) => {
   const classes = useToolbarStyles();
-  const { selectedClusters, onMergeClick } = props;
-  const numSelected = selectedClusters.length;
+  const numSelected = selectedRows.length;
 
   return (
     <Toolbar
@@ -125,12 +163,7 @@ const TableToolbar = (props: TableToolbarProps) => {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} cluster(s) selected (
-          {selectedClusters.reduce(
-            (acc, cluster) => acc + cluster.documents.length,
-            0
-          )}{" "}
-          documents)
+          {onRowsSelectedDynamicTitle}
         </Typography>
       ) : (
         <Typography
@@ -139,78 +172,130 @@ const TableToolbar = (props: TableToolbarProps) => {
           id="tableTitle"
           component="div"
         >
-          Clusters
+          {tableTitle}
         </Typography>
       )}
-      <Button
-        className={clsx(classes.button, {
-          [classes.enabledButton]: numSelected !== 0,
-        })}
-        variant="contained"
-        disabled={numSelected <= 1}
-        onClick={() =>
-          onMergeClick(selectedClusters.map((cluster) => cluster.id))
-        }
-      >
-        Merge
-      </Button>
-      <Button
-        className={clsx(classes.button, {
-          [classes.enabledButton]: numSelected !== 0,
-        })}
-        variant="contained"
-        disabled={numSelected === 0}
-      >
-        Export
-      </Button>
+      {buttons.map((button, index) => (
+        <Button
+          className={clsx(classes.button, {
+            [classes.enabledButton]: numSelected !== 0,
+          })}
+          variant={button.variant}
+          disabled={button.disabled}
+          key={`${button.label} ${index}`}
+          onClick={() =>
+            button.onClick(selectedRows.map((cluster) => cluster.id))
+          }
+        >
+          {button.label}
+        </Button>
+      ))}
     </Toolbar>
   );
 };
 
-const SelectableTable: React.FC<SelectableTableProps> = (props) => {
+export type TableDataType = {
+  id: string;
+  [key: string]: any;
+};
+
+type TableDataTypeKeys = keyof TableDataType;
+
+export interface SelectableTableProps {
+  /**
+   * Table title displayed in the table toolbar
+   */
+  tableTitle: string;
+  /**
+   * List of buttons to display in the table toolbar
+   */
+  buttons: SelectableTableButton[];
+  /**
+   * List of rows to display
+   */
+  rows: TableDataType[];
+  /**
+   * List of columns to display
+   */
+  columns: SelectableTableColumn[];
+  /**
+   * Id of the row which has focus
+   */
+  focusedRowId: string | null;
+  /**
+   * List of row ids selected with the checkbox
+   */
+  selectedRowIds: string[];
+  /**
+   * Text to display when rows are selected (with the checkbox). This will replace the 'tableTitle' value.
+   */
+  onRowsSelectedDynamicTitle: string;
+  /**
+   * Called when the user clicks on a checkbox
+   */
+  onChangeSelectedRows: (rowIds: string[]) => void;
+  /**
+   * Called when the user clicks on a row
+   */
+  onRowClick: (rowId: string) => void;
+  /**
+   * Called when a row attribute is changed via the input
+   */
+  onEditRowAttribute: (
+    rowId: string,
+    rowAttributeKey: TableDataTypeKeys,
+    value: string
+  ) => void;
+}
+
+const SelectableTable: React.FC<SelectableTableProps> = ({
+  tableTitle,
+  buttons,
+  selectedRowIds,
+  onChangeSelectedRows,
+  onRowsSelectedDynamicTitle,
+  rows,
+  columns,
+  focusedRowId,
+  onRowClick,
+  onEditRowAttribute,
+}) => {
   const classes = useStyles();
-  const {
-    rows,
-    onMergeClick,
-    selectedRowId,
-    onRowClick,
-    onEditClusterName,
-  } = props;
-  const [selected, setSelected] = useState<string[]>([]);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
+    if (event.target.checked && selectedRowIds.length === 0) {
       const newSelectedRows = rows.map((row) => row.id);
-      setSelected(newSelectedRows);
+      onChangeSelectedRows(newSelectedRows);
       return;
     }
 
-    setSelected([]);
+    onChangeSelectedRows([]);
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: string) => {
-    const selectedIndex = selected.indexOf(id);
+    const selectedIndex = selectedRowIds.indexOf(id);
     let newSelected = [];
     if (selectedIndex === -1) {
-      newSelected = [...selected, id];
+      newSelected = [...selectedRowIds, id];
     } else {
-      newSelected = selected.filter((selectedId) => selectedId !== id);
+      newSelected = selectedRowIds.filter((selectedId) => selectedId !== id);
     }
 
-    setSelected(newSelected);
+    onChangeSelectedRows(newSelected);
   };
 
-  const isSelected = (id: string) => selected.indexOf(id) !== -1;
-  const isSelectedForPreview = (id: string) => selectedRowId === id;
+  const isSelected = (id: string) => selectedRowIds.indexOf(id) !== -1;
+  const isSelectedForPreview = (id: string) => focusedRowId === id;
 
   return (
     <Paper className={classes.paper}>
       <TableToolbar
-        selectedClusters={rows.filter((row) => selected.indexOf(row.id) !== -1)}
-        onMergeClick={(clusterIds) => {
-          onMergeClick(clusterIds);
-          setSelected([]);
-        }}
+        tableTitle={tableTitle}
+        buttons={buttons}
+        onRowsSelectedDynamicTitle={onRowsSelectedDynamicTitle}
+        selectedRows={rows.filter(
+          (row) => selectedRowIds.indexOf(row.id) !== -1
+        )}
       />
       <TableContainer className={classes.container}>
         <Table
@@ -222,9 +307,10 @@ const SelectableTable: React.FC<SelectableTableProps> = (props) => {
         >
           <SelectableTableHead
             classes={classes}
-            numSelected={selected.length}
+            numSelected={selectedRowIds.length}
             onSelectAllClick={handleSelectAllClick}
             rowCount={rows.length}
+            columns={columns}
           />
           <TableBody>
             {rows.map((row, index) => {
@@ -251,20 +337,37 @@ const SelectableTable: React.FC<SelectableTableProps> = (props) => {
                       }}
                     />
                   </TableCell>
-                  <TableCell
-                    component="th"
-                    id={labelId}
-                    scope="row"
-                    padding="none"
-                  >
-                    <EditInput
-                      value={row.name}
-                      onChange={(name) => {
-                        onEditClusterName(row.id, name);
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell align="right">{row.documents.length}</TableCell>
+                  {columns.map((column, columnIndex) => {
+                    return column.input ? (
+                      <TableCell
+                        component="th"
+                        id={labelId}
+                        scope="row"
+                        padding={column.padding}
+                        align={column.align}
+                        key={`${column.label} ${columnIndex}`}
+                      >
+                        <EditInput
+                          value={row[column.rowAttributeKey]}
+                          onChange={(value) => {
+                            onEditRowAttribute(
+                              row.id,
+                              column.rowAttributeKey,
+                              value
+                            );
+                          }}
+                        />
+                      </TableCell>
+                    ) : (
+                      <TableCell
+                        align={column.align}
+                        padding={column.padding}
+                        key={`${column.label} ${columnIndex} value`}
+                      >
+                        {row[column.rowAttributeKey]}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               );
             })}
