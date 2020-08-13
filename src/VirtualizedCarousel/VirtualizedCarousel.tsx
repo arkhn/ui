@@ -40,16 +40,21 @@ const cellRenderer = (
   if (!isScrolling && isVisible) {
     setSelectedColumn(activePageLabel - 1);
   }
+
   return (
     <div
       key={props.key}
       style={{ ...style, textAlign: "center" }}
       onClick={toggleModal}
+      className={"imgWrapper"}
     >
-      <img
-        style={{ height: "100%" }}
-        src={documents[props.columnIndex].source}
-      />
+      {documents[props.columnIndex] && (
+        <img
+          style={{ height: "100%" }}
+          src={documents[props.columnIndex].source}
+          alt={`${props.columnIndex}`}
+        />
+      )}
     </div>
   );
 };
@@ -155,10 +160,13 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
               },
             }}
           >
-            <img
-              style={{ height: "100%" }}
-              src={documents[selectedColumn].source}
-            />
+            {documents[selectedColumn] && (
+              <img
+                style={{ height: "100%" }}
+                src={documents[selectedColumn].source}
+                alt={`${selectedColumn}`}
+              />
+            )}
           </Modal>
         </>
       )}
