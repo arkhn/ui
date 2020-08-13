@@ -4,6 +4,18 @@ This library offers generic ReactJs components built with Typescript.
 
 It has been designed for internal use and some of them may come with prop names corresponding to medical lexical fields.
 
+## Storybook
+
+To launch the storybook, first clone the project and type this command from the root directory :
+
+```
+$ yarn storybook
+
+or
+
+$ npm storybook
+```
+
 ## Get Started
 
 ### Installation

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import clsx from "clsx";
 import {
   makeStyles,
@@ -83,8 +83,8 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const SelectableTableHead = (props: TableHeadProps) => {
-  const { classes, numSelected, onSelectAllClick, rowCount, columns } = props;
+export const SelectableTableHead = (props: TableHeadProps) => {
+  const { numSelected, onSelectAllClick, rowCount, columns } = props;
   return (
     <TableHead>
       <TableRow>
@@ -136,16 +136,16 @@ const useToolbarStyles = makeStyles((theme: Theme) =>
 
 interface TableToolbarProps {
   buttons: SelectableTableButton[];
-  tableTitle: string;
+  tableTitle?: string;
   selectedRows: TableDataType[];
-  onRowsSelectedDynamicTitle: string;
+  toolBarDynamicTitle?: string;
 }
 
-const TableToolbar: React.FC<TableToolbarProps> = ({
+export const TableToolbar: React.FC<TableToolbarProps> = ({
   selectedRows,
   tableTitle,
   buttons,
-  onRowsSelectedDynamicTitle,
+  toolBarDynamicTitle,
 }) => {
   const classes = useToolbarStyles();
   const numSelected = selectedRows.length;
@@ -163,7 +163,7 @@ const TableToolbar: React.FC<TableToolbarProps> = ({
           variant="subtitle1"
           component="div"
         >
-          {onRowsSelectedDynamicTitle}
+          {toolBarDynamicTitle}
         </Typography>
       ) : (
         <Typography
@@ -205,11 +205,11 @@ export interface SelectableTableProps {
   /**
    * Table title displayed in the table toolbar
    */
-  tableTitle: string;
+  tableTitle?: string;
   /**
    * List of buttons to display in the table toolbar
    */
-  buttons: SelectableTableButton[];
+  buttons?: SelectableTableButton[];
   /**
    * List of rows to display
    */
@@ -229,7 +229,7 @@ export interface SelectableTableProps {
   /**
    * Text to display when rows are selected (with the checkbox). This will replace the 'tableTitle' value.
    */
-  onRowsSelectedDynamicTitle: string;
+  toolBarDynamicTitle?: string;
   /**
    * Called when the user clicks on a checkbox
    */
@@ -250,10 +250,10 @@ export interface SelectableTableProps {
 
 const SelectableTable: React.FC<SelectableTableProps> = ({
   tableTitle,
-  buttons,
+  buttons = [],
   selectedRowIds,
   onChangeSelectedRows,
-  onRowsSelectedDynamicTitle,
+  toolBarDynamicTitle,
   rows,
   columns,
   focusedRowId,
@@ -292,7 +292,7 @@ const SelectableTable: React.FC<SelectableTableProps> = ({
       <TableToolbar
         tableTitle={tableTitle}
         buttons={buttons}
-        onRowsSelectedDynamicTitle={onRowsSelectedDynamicTitle}
+        toolBarDynamicTitle={toolBarDynamicTitle}
         selectedRows={rows.filter(
           (row) => selectedRowIds.indexOf(row.id) !== -1
         )}
