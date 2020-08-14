@@ -10,7 +10,7 @@ module.exports = {
     es6: true,
   },
   plugins: ["@typescript-eslint", "prettier"],
-  ignorePatterns: ["index.ts"],
+  ignorePatterns: [],
   rules: {
     "no-underscore-dangle": 0,
     "no-debugger": 1,

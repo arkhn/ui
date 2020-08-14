@@ -29,8 +29,8 @@ jobs:
       - name: Lint
         run: yarn lint
 
-      # - name: Test
-      #   run: yarn test:ci
+      - name: Test
+        run: yarn test:ci
 
   publish:
     name: Build and publish
