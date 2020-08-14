@@ -1,3 +1,12 @@
-export * from "./EditInput/EditInput";
-export * from "./SelectableTable/SelectableTable";
-export * from "./VirtualizedCarousel/VirtualizedCarousel";
+export { default as EditInput, EditInputProps } from "./EditInput/EditInput";
+export {
+  default as SelectableTable,
+  SelectableTableButton,
+  SelectableTableColumn,
+  SelectableTableProps,
+  TableDataType
+} from "./SelectableTable/SelectableTable";
+export {
+  default as VirtualizedCarousel,
+  VirtualizedCarouselProps
+} from "./VirtualizedCarousel/VirtualizedCarousel";
