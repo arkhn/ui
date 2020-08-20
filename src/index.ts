@@ -4,15 +4,15 @@ export {
   SelectableTableButton,
   SelectableTableColumn,
   SelectableTableProps,
-  TableDataType,
+  TableDataType
 } from "./SelectableTable/SelectableTable";
 export {
   default as VirtualizedCarousel,
-  VirtualizedCarouselProps,
+  VirtualizedCarouselProps
 } from "./VirtualizedCarousel/VirtualizedCarousel";
 export {
   default as LabelDroppableMenu,
-  LabelDroppableMenuProps,
+  LabelDroppableMenuProps
 } from "./LabelDroppableMenu/LabelDroppableMenu";
 export {
   default as VirtualizedDnDGrid,
@@ -20,5 +20,5 @@ export {
   GridDataType,
   HandleResizeColumn,
   HeaderCellRenderer,
-  VirtualizedDnDGridProps,
+  VirtualizedDnDGridProps
 } from "./VirtualizedDnDGrid/VirtualizedDnDGrid";
