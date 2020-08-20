@@ -6,9 +6,18 @@ import Card from "@material-ui/core/Card";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     text: { whiteSpace: "pre-wrap", margin: 13 },
-    color: { backgroundColor: theme.palette.primary.main, color: "white" },
-    key: { backgroundColor: theme.palette.secondary.dark, color: "white" },
-    value: { backgroundColor: theme.palette.secondary.light, color: "white" },
+    color: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.primary.contrastText
+    },
+    key: {
+      backgroundColor: theme.palette.secondary.dark,
+      color: theme.palette.secondary.contrastText
+    },
+    value: {
+      backgroundColor: theme.palette.secondary.light,
+      color: theme.palette.secondary.contrastText
+    },
     none: {}
   })
 );
