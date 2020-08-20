@@ -9,7 +9,7 @@ const useStyles = makeStyles(() =>
     color: { backgroundColor: "#5E4352", color: "white" },
     key: { backgroundColor: "#E43F6F", color: "white" },
     value: { backgroundColor: "#F56476", color: "white" },
-    none: {},
+    none: {}
   })
 );
 
@@ -59,13 +59,13 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   data,
   keyToShow = [],
   onIntervalClick,
-  onIntervalHover,
+  onIntervalHover
 }) => {
   const classes = useStyles();
   const positionList: Interval[] = [];
 
-  data.forEach((d) => {
-    d.positions.forEach((pos) => {
+  data.forEach(d => {
+    d.positions.forEach(pos => {
       const show =
         keyToShow.length === 0 || keyToShow.includes(d.key) ? true : false;
 
@@ -74,20 +74,20 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
           ...pos.key,
           key: d.key,
           type: "key",
-          colored: show,
+          colored: show
         });
         positionList.push({
           ...pos.value,
           key: d.key,
           type: "value",
-          colored: show,
+          colored: show
         });
       } else {
         positionList.push({
           ...pos.value,
           key: d.key,
           type: "color",
-          colored: show,
+          colored: show
         });
       }
     });
