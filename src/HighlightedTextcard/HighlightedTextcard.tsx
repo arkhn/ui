@@ -1,6 +1,6 @@
 import React from "react";
 
-import { makeStylesgit, createStyles } from "@material-ui/core";
+import { makeStyles, createStyles } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 
 const useStyles = makeStyles(() =>
