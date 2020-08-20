@@ -4,12 +4,12 @@ export {
   SelectableTableButton,
   SelectableTableColumn,
   SelectableTableProps,
-  TableDataType,
+  TableDataType
 } from "./SelectableTable/SelectableTable";
 
 export {
   default as VirtualizedCarousel,
-  VirtualizedCarouselProps,
+  VirtualizedCarouselProps
 } from "./VirtualizedCarousel/VirtualizedCarousel";
 
 export { default as HighlightedTextcard } from "./HighlightedTextcard/HighlightedTextcard";

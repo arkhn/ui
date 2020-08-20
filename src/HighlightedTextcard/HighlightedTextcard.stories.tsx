@@ -1,6 +1,7 @@
 import React from "react";
 import HighlightedTextcard, {
   HighlightedTextcardProps,
+  Interval,
 } from "./HighlightedTextcard";
 
 import { action } from "@storybook/addon-actions";
@@ -17,12 +18,39 @@ const Template: Story<HighlightedTextcardProps> = (args) => (
 
 export const Default = Template.bind({});
 
+const callback = (pos: Interval) => {
+  action(`Clicked at position: (${pos.start},${pos.stop})`)(pos);
+};
+const callbackHover = (pos: Interval) => {
+  action(`Mouse passed at position: (${pos.start},${pos.stop})`)(pos);
+};
+
 Default.args = {
-  position: [
-    { key: { start: 0, stop: 5 }, value: { start: 6, stop: 55 } },
-    { key: { start: 57, stop: 200 }, value: { start: 252, stop: 500 } },
-    { value: { start: 1100, stop: 2000 } },
+  data: [
+    {
+      key: "test",
+      positions: [
+        { key: { start: 0, stop: 5 }, value: { start: 6, stop: 55 } },
+        { key: { start: 57, stop: 200 }, value: { start: 252, stop: 500 } },
+      ],
+    },
+    {
+      key: "test2",
+      positions: [
+        {
+          key: { start: 2200, stop: 2250 },
+          value: { start: 2500, stop: 3000 },
+        },
+      ],
+    },
+    {
+      key: "test3",
+      positions: [{ value: { start: 1100, stop: 2000 } }],
+    },
   ],
+  keyToShow: ["test", "test2", "test3"],
+  onIntervalClick: callback,
+  onIntervalHover: callbackHover,
   content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero commodo, lobortis quam et, elementum risus. Nullam tempus viverra tortor, hendrerit sodales sem dapibus eu. Duis nec placerat purus. Etiam varius aliquet efficitur. Duis scelerisque mattis ullamcorper. Quisque mollis magna in varius dictum. Sed accumsan, tortor luctus molestie fermentum, sapien dolor condimentum turpis, eget volutpat nibh elit aliquet massa. Nullam tempor massa metus. Proin ultrices tortor orci. Nunc accumsan viverra risus. Suspendisse consequat magna ac vehicula vestibulum.
 
 Ut luctus risus a neque vehicula varius. Morbi felis metus, molestie et sodales in, luctus nec metus. Quisque ut consectetur mi. Nulla cursus lectus dolor, eu posuere felis vehicula vel. Nunc ac venenatis libero. Curabitur lobortis mollis nibh sed porttitor. Aliquam erat volutpat. Aenean dapibus felis at ligula pulvinar posuere. Suspendisse purus eros, blandit id quam sed, vestibulum vulputate arcu. Quisque mattis a urna auctor aliquet. Nullam egestas purus augue, sit amet fermentum eros scelerisque aliquam. Curabitur sollicitudin dui suscipit risus gravida finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris enim justo, aliquam vel facilisis at, eleifend vitae arcu.
