@@ -4,9 +4,21 @@ export {
   SelectableTableButton,
   SelectableTableColumn,
   SelectableTableProps,
-  TableDataType
+  TableDataType,
 } from "./SelectableTable/SelectableTable";
 export {
   default as VirtualizedCarousel,
-  VirtualizedCarouselProps
+  VirtualizedCarouselProps,
 } from "./VirtualizedCarousel/VirtualizedCarousel";
+export {
+  default as LabelDroppableMenu,
+  LabelDroppableMenuProps,
+} from "./LabelDroppableMenu/LabelDroppableMenu";
+export {
+  default as VirtualizedDnDGrid,
+  ColumnData,
+  GridDataType,
+  HandleResizeColumn,
+  HeaderCellRenderer,
+  VirtualizedDnDGridProps,
+} from "./VirtualizedDnDGrid/VirtualizedDnDGrid";
