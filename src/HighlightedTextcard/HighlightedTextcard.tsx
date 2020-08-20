@@ -1,14 +1,14 @@
 import React from "react";
 
-import { makeStyles, createStyles } from "@material-ui/core";
+import { makeStyles, createStyles, Theme } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     text: { whiteSpace: "pre-wrap", margin: 13 },
-    color: { backgroundColor: "#5E4352", color: "white" },
-    key: { backgroundColor: "#E43F6F", color: "white" },
-    value: { backgroundColor: "#F56476", color: "white" },
+    color: { backgroundColor: theme.palette.primary.main, color: "white" },
+    key: { backgroundColor: theme.palette.secondary.dark, color: "white" },
+    value: { backgroundColor: theme.palette.secondary.light, color: "white" },
     none: {}
   })
 );
