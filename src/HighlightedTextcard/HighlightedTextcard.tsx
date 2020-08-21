@@ -6,7 +6,7 @@ import Card from "@material-ui/core/Card";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     text: { whiteSpace: "pre-wrap", margin: 13 },
-    color: {
+    onlyValueColor: {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText
     },
@@ -26,7 +26,7 @@ export interface Interval {
   start: number;
   stop: number;
   key?: string;
-  type?: "key" | "value" | "color";
+  type?: "key" | "value" | "onlyValueColor";
   colored?: boolean;
 }
 
@@ -50,93 +50,81 @@ export interface HighlightedTextcardProps {
    */
   data: HighlightedTextcardData[];
   /**
-   * Keys of identified text to show. An empty array will highlight all identified text
+   * Keys of identified text to show. An empty array will highlight all interval in data
    */
   keyToShow: string[];
   /**
    * Callback function returning the key on interval click
    */
   onIntervalClick?: Function;
-  /**
-   * Callback function returning the Interval containing the key
-   */
-  onIntervalHover?: Function;
 }
 
 const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   content,
   data,
   keyToShow = [],
-  onIntervalClick,
-  onIntervalHover
+  onIntervalClick
 }) => {
   const classes = useStyles();
-  const positionList: Interval[] = [];
 
-  data.forEach(d => {
-    d.positions.forEach(pos => {
-      const show =
-        keyToShow.length === 0 || keyToShow.includes(d.key) ? true : false;
+  const intervalList: Interval[] = data.reduce(
+    (acc: Interval[], val: HighlightedTextcardData) => {
+      for (const pos of val.positions) {
+        const show = keyToShow.length === 0 || keyToShow.includes(val.key);
 
-      if (pos.key) {
-        positionList.push({
-          ...pos.key,
-          key: d.key,
-          type: "key",
-          colored: show
-        });
-        positionList.push({
-          ...pos.value,
-          key: d.key,
-          type: "value",
-          colored: show
-        });
-      } else {
-        positionList.push({
-          ...pos.value,
-          key: d.key,
-          type: "color",
-          colored: show
-        });
+        if (pos.key) {
+          acc.push({
+            ...pos.key,
+            key: val.key,
+            type: "key",
+            colored: show
+          });
+          acc.push({
+            ...pos.value,
+            key: val.key,
+            type: "value",
+            colored: show
+          });
+        } else {
+          acc.push({
+            ...pos.value,
+            key: val.key,
+            type: "onlyValueColor",
+            colored: show
+          });
+        }
       }
-    });
-  });
+      return acc;
+    },
+    []
+  );
 
   const sortByValueStart = (a: Interval, b: Interval): -1 | 1 =>
     a.start < b.start ? -1 : 1;
 
-  positionList.sort(sortByValueStart);
+  intervalList.sort(sortByValueStart);
 
   return (
     <Card>
       <pre className={classes.text}>
-        {content.substring(0, positionList[0].start)}
-        {positionList.map((pos, i) => {
+        {content.substring(0, intervalList[0].start)}
+        {intervalList.map((pos, i) => {
           return (
             <React.Fragment key={"highlightedText_" + i}>
               <span
                 className={
-                  pos.colored
-                    ? pos.type
-                      ? classes[pos.type]
-                      : classes.none
-                    : classes.none
+                  pos.colored && pos.type ? classes[pos.type] : classes.none
                 }
-                onClick={() => {
-                  if (onIntervalClick) onIntervalClick(pos);
-                }}
-                onMouseOver={() => {
-                  if (onIntervalHover) onIntervalHover(pos);
-                }}
+                onClick={() => onIntervalClick && onIntervalClick(pos)}
               >
                 {content.substring(pos.start, pos.stop)}
               </span>
-              {positionList[i + 1] &&
-                content.substring(pos.stop, positionList[i + 1].start)}
+              {intervalList[i + 1] &&
+                content.substring(pos.stop, intervalList[i + 1].start)}
             </React.Fragment>
           );
         })}
-        {content.substring(positionList[positionList.length - 1].stop)}
+        {content.substring(intervalList[intervalList.length - 1].stop)}
       </pre>
     </Card>
   );
