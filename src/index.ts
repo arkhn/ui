@@ -10,3 +10,15 @@ export {
   default as VirtualizedCarousel,
   VirtualizedCarouselProps
 } from "./VirtualizedCarousel/VirtualizedCarousel";
+export {
+  default as LabelDroppableMenu,
+  LabelDroppableMenuProps
+} from "./LabelDroppableMenu/LabelDroppableMenu";
+export {
+  default as VirtualizedDnDGrid,
+  ColumnData,
+  GridDataType,
+  HandleResizeColumn,
+  HeaderCellRenderer,
+  VirtualizedDnDGridProps
+} from "./VirtualizedDnDGrid/VirtualizedDnDGrid";
