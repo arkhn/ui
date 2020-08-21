@@ -13,7 +13,7 @@ export default {
     ),
   ],
   argTypes: {
-    numberOfDocuments: {
+    documentCount: {
       control: { type: "range", min: 1, max: 10000, step: 1 },
     },
   },
@@ -35,15 +35,29 @@ const getDocuments = (numberOfDocuments: number) => {
   return documents;
 };
 
-const Template: Story<VirtualizedCarouselProps & {
-  numberOfDocuments: number;
-}> = ({ numberOfDocuments, ...args }) => {
-  const documents = getDocuments(numberOfDocuments);
-  return <VirtualizedCarousel documents={documents} />;
+const Template: Story<VirtualizedCarouselProps> = ({ documentCount }) => {
+  const documents = getDocuments(documentCount);
+  const documentRenderer = (documentIndex: number) => {
+    return (
+      documents[documentIndex] && (
+        <img
+          style={{ height: "100%" }}
+          src={documents[documentIndex].source}
+          alt={`${documentIndex}`}
+        />
+      )
+    );
+  };
+  return (
+    <VirtualizedCarousel
+      documentRenderer={documentRenderer}
+      documentCount={documents.length}
+    />
+  );
 };
 
 export const Default = Template.bind({});
 
 Default.args = {
-  numberOfDocuments: 4000,
+  documentCount: 4000,
 };
