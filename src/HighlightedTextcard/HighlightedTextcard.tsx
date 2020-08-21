@@ -1,7 +1,7 @@
 import React from "react";
 
-import { makeStyles, createStyles, Theme } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
+import { makeStyles, createStyles, Theme, Container } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -17,6 +17,10 @@ const useStyles = makeStyles((theme: Theme) =>
     value: {
       backgroundColor: theme.palette.secondary.light,
       color: theme.palette.secondary.contrastText
+    },
+    scrollContainer: {
+      overflowY: "auto",
+      height: "100%"
     },
     none: {}
   })
@@ -105,28 +109,30 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   intervalList.sort(sortByValueStart);
 
   return (
-    <Card>
-      <pre className={classes.text}>
-        {content.substring(0, intervalList[0].start)}
-        {intervalList.map((pos, i) => {
-          return (
-            <React.Fragment key={"highlightedText_" + i}>
-              <span
-                className={
-                  pos.colored && pos.type ? classes[pos.type] : classes.none
-                }
-                onClick={() => onIntervalClick && onIntervalClick(pos)}
-              >
-                {content.substring(pos.start, pos.stop)}
-              </span>
-              {intervalList[i + 1] &&
-                content.substring(pos.stop, intervalList[i + 1].start)}
-            </React.Fragment>
-          );
-        })}
-        {content.substring(intervalList[intervalList.length - 1].stop)}
-      </pre>
-    </Card>
+    <Container className={classes.scrollContainer} maxWidth="sm">
+      <Paper>
+        <pre className={classes.text}>
+          {content.substring(0, intervalList[0].start)}
+          {intervalList.map((pos, i) => {
+            return (
+              <React.Fragment key={"highlightedText_" + i}>
+                <span
+                  className={
+                    pos.colored && pos.type ? classes[pos.type] : classes.none
+                  }
+                  onClick={() => onIntervalClick && onIntervalClick(pos)}
+                >
+                  {content.substring(pos.start, pos.stop)}
+                </span>
+                {intervalList[i + 1] &&
+                  content.substring(pos.stop, intervalList[i + 1].start)}
+              </React.Fragment>
+            );
+          })}
+          {content.substring(intervalList[intervalList.length - 1].stop)}
+        </pre>
+      </Paper>
+    </Container>
   );
 };
 
