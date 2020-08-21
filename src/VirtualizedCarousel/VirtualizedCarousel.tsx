@@ -12,7 +12,14 @@ import PrevIcon from "@material-ui/icons/NavigateBefore";
 import { makeStyles, createStyles, Theme, IconButton } from "@material-ui/core";
 
 export interface VirtualizedCarouselProps {
-  documents: { source: string }[];
+  /**
+   * Render called to display the document within the carousel and also inside the modal
+   */
+  documentRenderer: (documentIndex: number) => React.ReactNode;
+  /**
+   * Total number of documents
+   */
+  documentCount: number;
 }
 
 Modal.setAppElement("#root");
@@ -30,37 +37,9 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-const cellRenderer = (
-  documents: { source: string }[],
-  activePageLabel: number,
-  setSelectedColumn: React.Dispatch<React.SetStateAction<number>>,
-  toggleModal: () => void
-): GridCellRenderer => (props: GridCellProps) => {
-  const { isScrolling, isVisible, style } = props;
-  if (!isScrolling && isVisible) {
-    setSelectedColumn(activePageLabel - 1);
-  }
-
-  return (
-    <div
-      key={props.key}
-      style={{ ...style, textAlign: "center" }}
-      onClick={toggleModal}
-      className={"imgWrapper"}
-    >
-      {documents[props.columnIndex] && (
-        <img
-          style={{ height: "100%" }}
-          src={documents[props.columnIndex].source}
-          alt={`${props.columnIndex}`}
-        />
-      )}
-    </div>
-  );
-};
-
 const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
-  documents,
+  documentCount,
+  documentRenderer,
 }) => {
   const classes = useStyles();
   const [selectedColumn, setSelectedColumn] = React.useState(0);
@@ -70,7 +49,7 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
     setModalOpen(!isModalOpen);
   };
   const setNextDoc = () => {
-    if (selectedColumn < documents.length - 1) {
+    if (selectedColumn < documentCount - 1) {
       setSelectedColumn(activePageLabel);
     }
   };
@@ -78,6 +57,27 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
     if (selectedColumn > 0) {
       setSelectedColumn(activePageLabel - 2);
     }
+  };
+  const cellRenderer: GridCellRenderer = ({
+    isScrolling,
+    isVisible,
+    key,
+    style,
+    columnIndex,
+  }: GridCellProps) => {
+    if (!isScrolling && isVisible) {
+      setSelectedColumn(activePageLabel - 1);
+    }
+
+    return (
+      <div
+        key={key}
+        style={{ ...style, textAlign: "center" }}
+        onClick={toggleModal}
+      >
+        {documentRenderer(columnIndex)}
+      </div>
+    );
   };
   const onScroll = ({
     clientWidth,
@@ -122,13 +122,8 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
             </IconButton>
             <Grid
               aria-label="Document preview"
-              cellRenderer={cellRenderer(
-                documents,
-                activePageLabel,
-                setSelectedColumn,
-                toggleModal
-              )}
-              columnCount={documents.length}
+              cellRenderer={cellRenderer}
+              columnCount={documentCount}
               columnWidth={width}
               height={height}
               rowCount={1}
@@ -140,7 +135,7 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
               className={classes.grid}
             />
             <p>
-              {activePageLabel} of {documents.length}
+              {activePageLabel} of {documentCount}
             </p>
           </div>
           <Modal
@@ -160,13 +155,7 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
               },
             }}
           >
-            {documents[selectedColumn] && (
-              <img
-                style={{ height: "100%" }}
-                src={documents[selectedColumn].source}
-                alt={`${selectedColumn}`}
-              />
-            )}
+            {documentRenderer(selectedColumn)}
           </Modal>
         </>
       )}

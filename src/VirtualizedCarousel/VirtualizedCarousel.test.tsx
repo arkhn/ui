@@ -11,7 +11,12 @@ Enzyme.configure({ adapter: new Adapter() });
 describe("VirtualizedCarousel", () => {
   it("should render", () => {
     const documents = [{ source: "machin" }];
-    const wrapper = shallow(<VirtualizedCarousel documents={documents} />);
+    const wrapper = shallow(
+      <VirtualizedCarousel
+        documentCount={documents.length}
+        documentRenderer={(index) => documents[index]}
+      />
+    );
     const autoSizer = wrapper.find(AutoSizer);
     expect(autoSizer).toHaveLength(1);
   });
