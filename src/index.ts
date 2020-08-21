@@ -6,10 +6,18 @@ export {
   SelectableTableProps,
   TableDataType
 } from "./SelectableTable/SelectableTable";
+
 export {
   default as VirtualizedCarousel,
   VirtualizedCarouselProps
 } from "./VirtualizedCarousel/VirtualizedCarousel";
+export {
+  default as HighlightedTextcard,
+  Interval,
+  Position,
+  HighlightedTextcardData,
+  HighlightedTextcardProps
+} from "./HighlightedTextcard/HighlightedTextcard";
 export {
   default as LabelDroppableMenu,
   LabelDroppableMenuProps
