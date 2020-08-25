@@ -1,5 +1,5 @@
 import React from "react";
-
+import clsx from "clsx";
 import { makeStyles, createStyles, Theme, Container } from "@material-ui/core";
 import Paper from "@material-ui/core/Paper";
 
@@ -10,19 +10,41 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText
     },
+    onlyValueColorHovered: {
+      "&:hover": {
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText
+      }
+    },
     key: {
       backgroundColor: theme.palette.secondary.dark,
       color: theme.palette.secondary.contrastText
+    },
+    keyHovered: {
+      "&:hover": {
+        backgroundColor: theme.palette.secondary.dark,
+        color: theme.palette.secondary.contrastText
+      }
     },
     value: {
       backgroundColor: theme.palette.secondary.light,
       color: theme.palette.secondary.contrastText
     },
+    valueHovered: {
+      "&:hover": {
+        backgroundColor: theme.palette.secondary.light,
+        color: theme.palette.secondary.contrastText
+      }
+    },
     scrollContainer: {
       overflowY: "auto",
       height: "100%"
     },
-    none: {}
+    spanHover: {
+      "&:hover": {
+        cursor: "pointer"
+      }
+    }
   })
 );
 
@@ -60,7 +82,7 @@ export interface HighlightedTextcardProps {
   /**
    * Callback function returning the key on interval click
    */
-  onIntervalClick?: Function;
+  onIntervalClick?: (interval: Interval) => void;
 }
 
 const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
@@ -70,6 +92,33 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   onIntervalClick
 }) => {
   const classes = useStyles();
+
+  const getSpanClassName = (
+    type?: "key" | "value" | "onlyValueColor",
+    colored?: boolean
+  ): string => {
+    let className = "";
+    switch (type) {
+      case "key":
+        className = clsx(classes.spanHover, classes.keyHovered, {
+          [classes.key]: colored
+        });
+        break;
+      case "onlyValueColor":
+        className = clsx(classes.spanHover, classes.onlyValueColorHovered, {
+          [classes.onlyValueColor]: colored
+        });
+        break;
+      case "value":
+        className = clsx(classes.spanHover, classes.valueHovered, {
+          [classes.value]: colored
+        });
+        break;
+      default:
+        break;
+    }
+    return className;
+  };
 
   const intervalList: Interval[] = data.reduce(
     (acc: Interval[], val: HighlightedTextcardData) => {
@@ -117,9 +166,7 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
             return (
               <React.Fragment key={"highlightedText_" + i}>
                 <span
-                  className={
-                    pos.colored && pos.type ? classes[pos.type] : classes.none
-                  }
+                  className={getSpanClassName(pos.type, pos.colored)}
                   onClick={() => onIntervalClick && onIntervalClick(pos)}
                 >
                   {content.substring(pos.start, pos.stop)}
