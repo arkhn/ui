@@ -14,7 +14,8 @@ describe("VirtualizedCarousel", () => {
     const wrapper = shallow(
       <VirtualizedCarousel
         documentCount={documents.length}
-        documentRenderer={(index) => documents[index]}
+        documentRenderer={index => documents[index]}
+        selectedDocumentIndex={null}
       />
     );
     const autoSizer = wrapper.find(AutoSizer);
