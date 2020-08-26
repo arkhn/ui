@@ -24,6 +24,10 @@ export interface VirtualizedCarouselProps {
    */
   documentRenderer: (documentIndex: number) => React.ReactNode;
   /**
+   * Optional renderer to be used in place of documentRenderer when :documentCount is 0
+   */
+  noContentRenderer?: () => React.ReactNode;
+  /**
    * Total number of documents
    */
   documentCount: number;
@@ -76,7 +80,8 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
   onChangeDocument,
   selectedDocumentIndex,
   width = "25vw",
-  height = "50vh"
+  height = "50vh",
+  noContentRenderer
 }) => {
   const classes = useStyles();
   const [selectedColumn, setSelectedColumn] = React.useState(0);
@@ -175,6 +180,7 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
                 scrollToAlignment="center"
                 onScroll={onScroll}
                 className={classes.grid}
+                noContentRenderer={noContentRenderer}
               />
             </>
           )}
