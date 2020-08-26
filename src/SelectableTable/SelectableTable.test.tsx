@@ -6,9 +6,9 @@ import Adapter from "enzyme-adapter-react-16";
 import SelectableTable, {
   SelectableTableProps,
   TableToolbar,
-  SelectableTableHead,
+  SelectableTableHead
 } from "./SelectableTable";
-import { TableRow, TableCell, Button } from "@material-ui/core";
+import { TableRow, TableCell } from "@material-ui/core";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -22,20 +22,20 @@ const props: SelectableTableProps = {
       name: `row 1`,
       id: "0",
       documents: [],
-      numberOfDocs: 0,
+      numberOfDocs: 0
     },
     {
       name: `row 2`,
       id: "1",
       documents: [],
-      numberOfDocs: 0,
+      numberOfDocs: 0
     },
     {
       name: `row 3`,
       id: "2",
       documents: [],
-      numberOfDocs: 0,
-    },
+      numberOfDocs: 0
+    }
   ],
   columns: [
     {
@@ -43,34 +43,34 @@ const props: SelectableTableProps = {
       rowAttributeKey: "name",
       align: "left",
       padding: "none",
-      input: true,
+      input: true
     },
     {
       label: "Nombre de documents",
       rowAttributeKey: "numberOfDocs",
       align: "right",
-      padding: "default",
+      padding: "default"
     },
     {
       label: "Id",
       rowAttributeKey: "id",
       align: "right",
-      padding: "default",
-    },
+      padding: "default"
+    }
   ],
   buttons: [
     {
       label: "Button 1",
-      onClick: () => {},
+      onClick: () => {}
     },
     {
       label: "Button 2",
-      onClick: (ids: string[]) => {},
-    },
+      onClick: (ids: string[]) => {}
+    }
   ],
   onChangeSelectedRows: () => {},
   onEditRowAttribute: () => {},
-  onRowClick: () => {},
+  onRowClick: () => {}
 };
 
 describe("SelectableTable", () => {
