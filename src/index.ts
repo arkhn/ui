@@ -30,3 +30,4 @@ export {
   HeaderCellRenderer,
   VirtualizedDnDGridProps
 } from "./VirtualizedDnDGrid/VirtualizedDnDGrid";
+export { default as NavBar, NavBarProps } from "./NavBar/NavBar";
