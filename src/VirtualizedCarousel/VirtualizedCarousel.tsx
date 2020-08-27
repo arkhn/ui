@@ -143,30 +143,32 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
         <AutoSizer>
           {({ width: autoSizerWidth, height: autoSizerHeight }) => (
             <>
-              <div className={classes.previewButtonsContainer}>
-                <IconButton
-                  onClick={setPrevDoc}
-                  style={{
-                    position: "relative",
-                    left: 0,
-                    top: autoSizerHeight / 2,
-                    zIndex: 1
-                  }}
-                >
-                  <PrevIcon />
-                </IconButton>
-                <IconButton
-                  onClick={setNextDoc}
-                  style={{
-                    position: "relative",
-                    left: autoSizerWidth - 2 * 48,
-                    top: autoSizerHeight / 2,
-                    zIndex: 1
-                  }}
-                >
-                  <NextIcon />
-                </IconButton>
-              </div>
+              {documentCount > 0 && (
+                <div className={classes.previewButtonsContainer}>
+                  <IconButton
+                    onClick={setPrevDoc}
+                    style={{
+                      position: "relative",
+                      left: 0,
+                      top: autoSizerHeight / 2,
+                      zIndex: 1
+                    }}
+                  >
+                    <PrevIcon />
+                  </IconButton>
+                  <IconButton
+                    onClick={setNextDoc}
+                    style={{
+                      position: "relative",
+                      left: autoSizerWidth - 2 * 48,
+                      top: autoSizerHeight / 2,
+                      zIndex: 1
+                    }}
+                  >
+                    <NextIcon />
+                  </IconButton>
+                </div>
+              )}
               <Grid
                 aria-label="Document preview"
                 cellRenderer={cellRenderer}
@@ -186,14 +188,16 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
           )}
         </AutoSizer>
       </div>
-      <Paper className={classes.footerControls}>
-        <span>
-          {activePageLabel} of {documentCount}
-        </span>
-        <IconButton onClick={toggleModal}>
-          <FullScreenIcon />
-        </IconButton>
-      </Paper>
+      {documentCount > 0 && (
+        <Paper className={classes.footerControls}>
+          <span>
+            {activePageLabel} of {documentCount}
+          </span>
+          <IconButton onClick={toggleModal}>
+            <FullScreenIcon />
+          </IconButton>
+        </Paper>
+      )}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={toggleModal}
