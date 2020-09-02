@@ -10,6 +10,10 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText
     },
+    overlap: {
+      backgroundColor: theme.palette.warning.light,
+      color: theme.palette.warning.contrastText
+    },
     onlyValueColorHovered: {
       "&:hover": {
         backgroundColor: theme.palette.primary.main,
@@ -82,7 +86,7 @@ export interface HighlightedTextcardProps {
   /**
    * Callback function returning the key on interval click
    */
-  onIntervalClick?: (interval: Interval) => void;
+  onIntervalClick?: (intervals: Interval[]) => void;
 }
 
 const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
@@ -93,30 +97,36 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
 }) => {
   const classes = useStyles();
 
-  const getSpanClassName = (
-    type?: "key" | "value" | "onlyValueColor",
-    colored?: boolean
-  ): string => {
+  const getSpanClassName = (pos: Interval[]): string => {
     let className = "";
-    switch (type) {
-      case "key":
-        className = clsx(classes.spanHover, classes.keyHovered, {
-          [classes.key]: colored
-        });
-        break;
-      case "onlyValueColor":
-        className = clsx(classes.spanHover, classes.onlyValueColorHovered, {
-          [classes.onlyValueColor]: colored
-        });
-        break;
-      case "value":
-        className = clsx(classes.spanHover, classes.valueHovered, {
-          [classes.value]: colored
-        });
-        break;
-      default:
-        break;
+    let coloredPosition = pos.map(p => {
+      if (p && p.colored) return p;
+    });
+    if (coloredPosition.length === 1 && coloredPosition[0]) {
+      switch (coloredPosition[0].type) {
+        case "key":
+          className = clsx(classes.spanHover, classes.keyHovered, {
+            [classes.key]: coloredPosition[0].colored
+          });
+          break;
+        case "onlyValueColor":
+          className = clsx(classes.spanHover, classes.onlyValueColorHovered, {
+            [classes.onlyValueColor]: coloredPosition[0].colored
+          });
+          break;
+        case "value":
+          className = clsx(classes.spanHover, classes.valueHovered, {
+            [classes.value]: coloredPosition[0].colored
+          });
+          break;
+        default:
+          break;
+      }
     }
+    if (coloredPosition.length > 1)
+      className = clsx(classes.spanHover, classes.overlap, {
+        [classes.overlap]: true
+      });
     return className;
   };
 
@@ -152,32 +162,46 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
     []
   );
 
-  const sortByValueStart = (a: Interval, b: Interval): -1 | 1 =>
-    a.start < b.start ? -1 : 1;
+  let positionList: number[] = [0, content.length];
+  for (let i in intervalList) {
+    positionList.push(intervalList[i].start);
+    positionList.push(intervalList[i].stop);
+  }
 
-  intervalList.sort(sortByValueStart);
+  positionList.sort((a, b) => {
+    return a - b;
+  });
+
+  const getIntervalInPosition = (position: number) =>
+    intervalList.filter(
+      interval =>
+        position >= interval.start && position <= interval.stop && interval
+    );
+
+  const getText = () => {
+    const result = [];
+    for (let i = 1; i < positionList.length; i++) {
+      let intervals = getIntervalInPosition(
+        Math.floor((positionList[i] + positionList[i - 1]) / 2)
+      );
+      result.push(
+        <span
+          key={i}
+          className={getSpanClassName(intervals)}
+          onClick={() => onIntervalClick && onIntervalClick(intervals)}
+        >
+          {content.substring(positionList[i - 1], positionList[i])}
+        </span>
+      );
+    }
+
+    return result;
+  };
 
   return (
     <Container className={classes.scrollContainer} maxWidth="sm">
       <Paper>
-        <pre className={classes.text}>
-          {content.substring(0, intervalList[0].start)}
-          {intervalList.map((pos, i) => {
-            return (
-              <React.Fragment key={"highlightedText_" + i}>
-                <span
-                  className={getSpanClassName(pos.type, pos.colored)}
-                  onClick={() => onIntervalClick && onIntervalClick(pos)}
-                >
-                  {content.substring(pos.start, pos.stop)}
-                </span>
-                {intervalList[i + 1] &&
-                  content.substring(pos.stop, intervalList[i + 1].start)}
-              </React.Fragment>
-            );
-          })}
-          {content.substring(intervalList[intervalList.length - 1].stop)}
-        </pre>
+        <pre className={classes.text}>{getText()}</pre>
       </Paper>
     </Container>
   );

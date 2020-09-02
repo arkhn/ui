@@ -44,16 +44,30 @@ Etiam condimentum dui sed sem tincidunt, non accumsan urna convallis. Vivamus da
 
 describe("HighlightedTextcard", () => {
   it("Should render", () => {
-    let spanNumber = 0;
+    let positionList: number[] = [0, props.content.length];
     props.data.forEach(d => {
       d.positions.forEach(pos => {
-        if (pos.key) spanNumber += 1;
-        if (pos.value) spanNumber += 1;
+        if (pos.key) {
+          positionList.push(pos.key.start);
+          positionList.push(pos.key.stop);
+        }
+        if (pos.value) {
+          positionList.push(pos.value.start);
+          positionList.push(pos.value.stop);
+        }
       });
     });
+
     const wrapper = shallow(<HighlightedTextcard {...props} />);
 
     const spanElement = wrapper.find("pre").find("span");
-    expect(spanElement).toHaveLength(spanNumber);
+
+    expect(spanElement).toHaveLength(positionList.length - 1);
+
+    let text = "";
+    spanElement.forEach(sp => {
+      text += sp.text();
+    });
+    expect(text).toEqual(props.content);
   });
 });
