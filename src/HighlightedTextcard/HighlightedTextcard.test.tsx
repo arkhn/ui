@@ -1,6 +1,7 @@
 import React from "react";
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
+import each from "jest-each";
 
 /* Component to test */
 import HighlightedTextcard, {
@@ -42,18 +43,50 @@ Aliquam at neque venenatis, tempor turpis nec, posuere leo. In efficitur enim in
 Etiam condimentum dui sed sem tincidunt, non accumsan urna convallis. Vivamus dapibus nulla a tempus scelerisque. Nam in ligula sit amet diam pellentesque facilisis a at lorem. Phasellus id sagittis enim. Pellentesque ligula odio, ornare id suscipit vel, semper tempus diam. Quisque ex est, vulputate non sagittis id, consectetur ut elit. Praesent eu nulla vitae lorem varius imperdiet vel at nibh. Aenean fringilla, eros et tincidunt vestibulum, purus urna euismod turpis, ac pellentesque odio orci aliquam dolor. Etiam ultrices tempus tincidunt. Sed id aliquam ligula. Proin pharetra, lacus vel efficitur posuere, odio odio facilisis eros, ultricies rhoncus justo urna in mi. Donec ultrices, sapien vel condimentum luctus, libero nulla iaculis nulla, molestie efficitur leo diam eu massa. Ut lacinia ac lectus eget posuere. Duis lorem erat, iaculis in nunc non, volutpat sodales arcu.`
 };
 
-describe("HighlightedTextcard", () => {
-  it("Should render", () => {
-    let spanNumber = 0;
-    props.data.forEach(d => {
-      d.positions.forEach(pos => {
-        if (pos.key) spanNumber += 1;
-        if (pos.value) spanNumber += 1;
-      });
-    });
-    const wrapper = shallow(<HighlightedTextcard {...props} />);
+const props2: HighlightedTextcardProps = {
+  ...props,
+  data: []
+};
 
-    const spanElement = wrapper.find("pre").find("span");
-    expect(spanElement).toHaveLength(spanNumber);
-  });
+const props3: HighlightedTextcardProps = {
+  ...props,
+  data: [
+    {
+      key: "test",
+      positions: []
+    }
+  ]
+};
+
+describe("HighlightedTextcard", () => {
+  each([props, props2, props3]).test(
+    "testing HighlightedTextWithProps",
+    (props: HighlightedTextcardProps) => {
+      let positionList: number[] = [0, props.content.length];
+      props.data.forEach(d => {
+        d.positions.forEach(pos => {
+          if (pos.key) {
+            positionList.push(pos.key.start);
+            positionList.push(pos.key.stop);
+          }
+          if (pos.value) {
+            positionList.push(pos.value.start);
+            positionList.push(pos.value.stop);
+          }
+        });
+      });
+
+      const wrapper = shallow(<HighlightedTextcard {...props} />);
+
+      const spanElement = wrapper.find("pre").find("span");
+
+      expect(spanElement).toHaveLength(positionList.length - 1);
+
+      let text = "";
+      spanElement.forEach(sp => {
+        text += sp.text();
+      });
+      expect(text).toEqual(props.content);
+    }
+  );
 });
