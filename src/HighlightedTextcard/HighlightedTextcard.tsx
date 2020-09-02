@@ -10,16 +10,23 @@ const useStyles = makeStyles((theme: Theme) =>
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText
     },
-    overlap: {
-      backgroundColor: theme.palette.warning.light,
-      color: theme.palette.warning.contrastText
-    },
     onlyValueColorHovered: {
       "&:hover": {
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText
       }
     },
+    overlap: {
+      backgroundColor: theme.palette.warning.light,
+      color: theme.palette.warning.contrastText
+    },
+    overlapHovered: {
+      "&:hover": {
+        backgroundColor: theme.palette.warning.light,
+        color: theme.palette.warning.contrastText
+      }
+    },
+
     key: {
       backgroundColor: theme.palette.secondary.dark,
       color: theme.palette.secondary.contrastText
@@ -51,6 +58,39 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   })
 );
+
+const getSpanClassName = (
+  intervals: Interval[],
+  classes: ReturnType<typeof useStyles>
+): string => {
+  let className = "";
+  if (intervals.length === 1) {
+    switch (intervals[0].type) {
+      case "key":
+        className = clsx(classes.spanHover, classes.keyHovered, {
+          [classes.key]: intervals[0].colored
+        });
+        break;
+      case "onlyValueColor":
+        className = clsx(classes.spanHover, classes.onlyValueColorHovered, {
+          [classes.onlyValueColor]: intervals[0].colored
+        });
+        break;
+      case "value":
+        className = clsx(classes.spanHover, classes.valueHovered, {
+          [classes.value]: intervals[0].colored
+        });
+        break;
+      default:
+        break;
+    }
+  }
+  if (intervals.length > 1)
+    className = clsx(classes.spanHover, classes.overlapHovered, {
+      [classes.overlap]: intervals[0].colored
+    });
+  return className;
+};
 
 export interface Interval {
   start: number;
@@ -96,39 +136,6 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   onIntervalClick
 }) => {
   const classes = useStyles();
-
-  const getSpanClassName = (pos: Interval[]): string => {
-    let className = "";
-    let coloredPosition = pos.map(p => {
-      if (p && p.colored) return p;
-    });
-    if (coloredPosition.length === 1 && coloredPosition[0]) {
-      switch (coloredPosition[0].type) {
-        case "key":
-          className = clsx(classes.spanHover, classes.keyHovered, {
-            [classes.key]: coloredPosition[0].colored
-          });
-          break;
-        case "onlyValueColor":
-          className = clsx(classes.spanHover, classes.onlyValueColorHovered, {
-            [classes.onlyValueColor]: coloredPosition[0].colored
-          });
-          break;
-        case "value":
-          className = clsx(classes.spanHover, classes.valueHovered, {
-            [classes.value]: coloredPosition[0].colored
-          });
-          break;
-        default:
-          break;
-      }
-    }
-    if (coloredPosition.length > 1)
-      className = clsx(classes.spanHover, classes.overlap, {
-        [classes.overlap]: true
-      });
-    return className;
-  };
 
   const intervalList: Interval[] = data.reduce(
     (acc: Interval[], val: HighlightedTextcardData) => {
@@ -187,7 +194,7 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
       result.push(
         <span
           key={i}
-          className={getSpanClassName(intervals)}
+          className={getSpanClassName(intervals, classes)}
           onClick={() => onIntervalClick && onIntervalClick(intervals)}
         >
           {content.substring(positionList[i - 1], positionList[i])}
