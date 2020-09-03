@@ -47,9 +47,13 @@ Default.args = {
     {
       key: "group3",
       positions: [{ value: { start: 1100, stop: 2000 } }]
+    },
+    {
+      key: "group4",
+      positions: [{ value: { start: 1000, stop: 1200 } }]
     }
   ],
-  keyToShow: ["group1", "group2", "group3"],
+  keys: ["group1", "group2", "group3", "group4"],
   onIntervalClick: callback,
   content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero commodo, lobortis quam et, elementum risus. Nullam tempus viverra tortor, hendrerit sodales sem dapibus eu. Duis nec placerat purus. Etiam varius aliquet efficitur. Duis scelerisque mattis ullamcorper. Quisque mollis magna in varius dictum. Sed accumsan, tortor luctus molestie fermentum, sapien dolor condimentum turpis, eget volutpat nibh elit aliquet massa. Nullam tempor massa metus. Proin ultrices tortor orci. Nunc accumsan viverra risus. Suspendisse consequat magna ac vehicula vestibulum.
 

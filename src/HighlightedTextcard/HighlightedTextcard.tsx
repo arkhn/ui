@@ -59,37 +59,55 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const getIntervalClass = (
+  interval: Interval,
+  classes: ReturnType<typeof useStyles>
+) => {
+  switch (interval.type) {
+    case "key":
+      return clsx(classes.spanHover, classes.keyHovered, {
+        [classes.key]: interval.colored
+      });
+    case "onlyValueColor":
+      return clsx(classes.spanHover, classes.onlyValueColorHovered, {
+        [classes.onlyValueColor]: interval.colored
+      });
+    case "value":
+      return clsx(classes.spanHover, classes.valueHovered, {
+        [classes.value]: interval.colored
+      });
+    default:
+      return "";
+  }
+};
+
 const getSpanClassName = (
   intervals: Interval[],
   classes: ReturnType<typeof useStyles>
 ): string => {
-  let className = "";
   if (intervals.length === 1) {
-    switch (intervals[0].type) {
-      case "key":
-        className = clsx(classes.spanHover, classes.keyHovered, {
-          [classes.key]: intervals[0].colored
-        });
-        break;
-      case "onlyValueColor":
-        className = clsx(classes.spanHover, classes.onlyValueColorHovered, {
-          [classes.onlyValueColor]: intervals[0].colored
-        });
-        break;
-      case "value":
-        className = clsx(classes.spanHover, classes.valueHovered, {
-          [classes.value]: intervals[0].colored
-        });
-        break;
-      default:
-        break;
+    /*
+     * CASE ONE INTERVAL
+     */
+    return getIntervalClass(intervals[0], classes);
+  } else if (intervals.length > 1) {
+    /*
+     * CASE MULTIPLE INTERVALS
+     */
+    const coloredIntervals = intervals.filter(int => int.colored);
+
+    if (coloredIntervals.length === 0) {
+      // If none of the intervals are colored, we just apply hover styling
+      return clsx(classes.spanHover, classes.overlapHovered);
+    } else if (coloredIntervals.length === 1) {
+      // If just one Interval must be highlighted, we apply its style
+      return getIntervalClass(coloredIntervals[0], classes);
+    } else if (coloredIntervals.length > 1) {
+      // If more than one Intervals must be highlighted, we apply overlap style
+      return clsx(classes.spanHover, classes.overlapHovered, classes.overlap);
     }
   }
-  if (intervals.length > 1)
-    className = clsx(classes.spanHover, classes.overlapHovered, {
-      [classes.overlap]: intervals[0].colored
-    });
-  return className;
+  return "";
 };
 
 export interface Interval {
@@ -122,7 +140,7 @@ export interface HighlightedTextcardProps {
   /**
    * Keys of identified text to show. An empty array will highlight all interval in data
    */
-  keyToShow: string[];
+  keys: string[];
   /**
    * Callback function returning the key on interval click
    */
@@ -132,7 +150,7 @@ export interface HighlightedTextcardProps {
 const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   content,
   data,
-  keyToShow = [],
+  keys = [],
   onIntervalClick
 }) => {
   const classes = useStyles();
@@ -140,7 +158,7 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   const intervalList: Interval[] = data.reduce(
     (acc: Interval[], val: HighlightedTextcardData) => {
       for (const pos of val.positions) {
-        const show = keyToShow.length === 0 || keyToShow.includes(val.key);
+        const show = keys.length === 0 || keys.includes(val.key);
 
         if (pos.key) {
           acc.push({
@@ -169,14 +187,23 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
     []
   );
 
+  /*
+   * Generate the position array (positionList)
+   */
   let positionList: number[] = [0, content.length];
-  for (let i in intervalList) {
-    positionList.push(intervalList[i].start);
-    positionList.push(intervalList[i].stop);
-  }
+
+  intervalList.forEach(interval => {
+    positionList.push(interval.start);
+    positionList.push(interval.stop);
+  });
 
   positionList.sort((a, b) => {
     return a - b;
+  });
+
+  // Remove duplicates
+  positionList.filter((c, index) => {
+    return positionList.indexOf(c) === index;
   });
 
   const getIntervalInPosition = (position: number) =>
@@ -189,19 +216,22 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
     const result = [];
     for (let i = 1; i < positionList.length; i++) {
       let intervals = getIntervalInPosition(
-        Math.floor((positionList[i] + positionList[i - 1]) / 2)
+        (positionList[i] + positionList[i - 1]) / 2
       );
       result.push(
         <span
           key={i}
           className={getSpanClassName(intervals, classes)}
-          onClick={() => onIntervalClick && onIntervalClick(intervals)}
+          onClick={() =>
+            onIntervalClick &&
+            intervals.length > 0 &&
+            onIntervalClick(intervals)
+          }
         >
           {content.substring(positionList[i - 1], positionList[i])}
         </span>
       );
     }
-
     return result;
   };
 
