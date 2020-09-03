@@ -202,8 +202,8 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   });
 
   // Remove duplicates
-  positionList.filter((c, index) => {
-    return positionList.indexOf(c) === index;
+  positionList = positionList.filter((c, index, originalPositionList) => {
+    return originalPositionList.indexOf(c) === index;
   });
 
   const getIntervalInPosition = (position: number) =>

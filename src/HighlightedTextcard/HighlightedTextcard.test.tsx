@@ -58,8 +58,18 @@ const props3: HighlightedTextcardProps = {
   ]
 };
 
+const props4: HighlightedTextcardProps = {
+  ...props,
+  keys: ["test", "test2"]
+};
+
+const props5: HighlightedTextcardProps = {
+  ...props,
+  keys: ["test", "test3"]
+};
+
 describe("HighlightedTextcard", () => {
-  each([props, props2, props3]).test(
+  each([props, props2, props3, props4, props5]).test(
     "testing HighlightedTextWithProps",
     (props: HighlightedTextcardProps) => {
       let positionList: number[] = [0, props.content.length];
@@ -77,8 +87,8 @@ describe("HighlightedTextcard", () => {
       });
 
       // Remove duplicates
-      positionList.filter((c, index) => {
-        return positionList.indexOf(c) === index;
+      positionList = positionList.filter((c, index, originalPositionList) => {
+        return originalPositionList.indexOf(c) === index;
       });
 
       const wrapper = shallow(<HighlightedTextcard {...props} />);
