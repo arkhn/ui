@@ -6,7 +6,6 @@ export {
   SelectableTableProps,
   TableDataType
 } from "./SelectableTable/SelectableTable";
-
 export {
   default as VirtualizedCarousel,
   VirtualizedCarouselProps
@@ -31,3 +30,7 @@ export {
   VirtualizedDnDGridProps
 } from "./VirtualizedDnDGrid/VirtualizedDnDGrid";
 export { default as NavBar, NavBarProps } from "./NavBar/NavBar";
+export {
+  default as ComponentOverlayer,
+  ComponentOverlayerProps
+} from "./ComponentOverlayer/ComponentOverlayer";
