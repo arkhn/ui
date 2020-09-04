@@ -124,8 +124,7 @@ export interface Position {
 }
 
 export interface HighlightedTextcardData {
-  key: string;
-  positions: Position[];
+  [key: string]: Position[];
 }
 
 export interface HighlightedTextcardProps {
@@ -136,7 +135,7 @@ export interface HighlightedTextcardProps {
   /**
    * Data of position intervals and keys of identified text
    */
-  data: HighlightedTextcardData[];
+  data: HighlightedTextcardData;
   /**
    * Keys of identified text to show. An empty array will highlight all interval in data
    */
@@ -155,37 +154,35 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
 }) => {
   const classes = useStyles();
 
-  const intervalList: Interval[] = data.reduce(
-    (acc: Interval[], val: HighlightedTextcardData) => {
-      for (const pos of val.positions) {
-        const show = keys.length === 0 || keys.includes(val.key);
+  const intervalList: Interval[] = [];
 
-        if (pos.key) {
-          acc.push({
-            ...pos.key,
-            key: val.key,
-            type: "key",
-            colored: show
-          });
-          acc.push({
-            ...pos.value,
-            key: val.key,
-            type: "value",
-            colored: show
-          });
-        } else {
-          acc.push({
-            ...pos.value,
-            key: val.key,
-            type: "onlyValueColor",
-            colored: show
-          });
-        }
+  for (const dataKey in data) {
+    for (const position of data[dataKey]) {
+      const show = keys.length === 0 || keys.includes(dataKey);
+
+      if (position.key) {
+        intervalList.push({
+          ...position.key,
+          key: dataKey,
+          type: "key",
+          colored: show
+        });
+        intervalList.push({
+          ...position.value,
+          key: dataKey,
+          type: "value",
+          colored: show
+        });
+      } else {
+        intervalList.push({
+          ...position.value,
+          key: dataKey,
+          type: "onlyValueColor",
+          colored: show
+        });
       }
-      return acc;
-    },
-    []
-  );
+    }
+  }
 
   /*
    * Generate the position array (positionList)

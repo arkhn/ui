@@ -5,7 +5,7 @@ import { ScrollSync } from "react-virtualized";
 
 /* Component to test */
 import VirtualizedDnDGrid, {
-  VirtualizedDnDGridProps,
+  VirtualizedDnDGridProps
 } from "./VirtualizedDnDGrid";
 
 Enzyme.configure({ adapter: new Adapter() });
@@ -25,25 +25,24 @@ const props: VirtualizedDnDGridProps = {
     { dessert: "toto", calories: 58 },
     { dessert: "toto", calories: 58 },
     { dessert: "toto", calories: 58 },
-    { dessert: "toto", calories: 58 },
+    { dessert: "toto", calories: 58 }
   ],
   width: "100%",
   height: "400px",
-  selectedRowIndex: null,
   columns: [
     {
       width: 200,
       label: "Dessert",
       dataKey: "dessert",
-      isDragDisabled: false,
+      isDragDisabled: false
     },
     {
       width: 200,
       label: "Calories\u00A0(g)",
       dataKey: "calories",
-      numeric: true,
-    },
-  ],
+      numeric: true
+    }
+  ]
 };
 
 describe("VirtualizedDnDGrid", () => {

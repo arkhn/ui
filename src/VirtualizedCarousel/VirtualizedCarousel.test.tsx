@@ -15,7 +15,7 @@ describe("VirtualizedCarousel", () => {
       <VirtualizedCarousel
         documentCount={documents.length}
         documentRenderer={index => documents[index]}
-        selectedDocumentIndex={null}
+        onChangeDocument={() => {}}
       />
     );
     const autoSizer = wrapper.find(AutoSizer);

@@ -6,7 +6,7 @@ import {
   AutoSizer,
   Grid,
   GridCellRenderer,
-  ScrollSync,
+  ScrollSync
 } from "react-virtualized";
 import {
   DragDropContext,
@@ -14,7 +14,7 @@ import {
   Draggable,
   DropResult,
   ResponderProvided,
-  DraggableProvidedDragHandleProps,
+  DraggableProvidedDragHandleProps
 } from "react-beautiful-dnd";
 import ReactDraggable from "react-draggable";
 import { Checkbox, Tooltip } from "@material-ui/core";
@@ -24,21 +24,21 @@ const useStyles = makeStyles((theme: Theme) =>
     flexContainer: {
       display: "flex",
       alignItems: "center",
-      boxSizing: "border-box",
+      boxSizing: "border-box"
     },
     tableCell: {
       flex: 1,
       borderRight: `1px solid ${theme.palette.grey[300]}`,
-      whiteSpace: "nowrap",
+      whiteSpace: "nowrap"
     },
     gridFocus: {
       "&:focus": {
-        outline: "none",
-      },
+        outline: "none"
+      }
     },
     tablCellContent: {
       overflow: "hidden",
-      textOverflow: "ellipsis",
+      textOverflow: "ellipsis"
     },
     draggableCell: {
       display: "flex",
@@ -47,15 +47,15 @@ const useStyles = makeStyles((theme: Theme) =>
       boxSizing: "border-box",
       alignItems: "center",
       height: "100%",
-      flex: 1,
+      flex: 1
     },
     draggingCell: {
       border: "1px solid",
       borderColor: theme.palette.grey[300],
-      backgroundColor: "white",
+      backgroundColor: "white"
     },
     evenRowStyle: {
-      backgroundColor: theme.palette.grey[200],
+      backgroundColor: theme.palette.grey[200]
     },
     resizeHandle: {
       borderRight: "solid 1px",
@@ -63,40 +63,40 @@ const useStyles = makeStyles((theme: Theme) =>
       height: "100%",
       width: columnResizeHandleWidth,
       "&:hover": {
-        cursor: "col-resize",
-      },
+        cursor: "col-resize"
+      }
     },
     droppableContainer: {
-      width: "fit-content",
+      width: "fit-content"
     },
     scrollContainer: {
-      overflowX: "hidden",
+      overflowX: "hidden"
     },
     hoverCell: {
       "&:hover": {
-        backgroundColor: theme.palette.grey[300],
-      },
+        backgroundColor: theme.palette.grey[300]
+      }
     },
     selectedRowStyle: {
       backgroundColor: theme.palette.secondary.light,
       borderColor: theme.palette.secondary.main,
       "&:hover": {
-        backgroundColor: theme.palette.secondary.dark,
-      },
+        backgroundColor: theme.palette.secondary.dark
+      }
     },
     selectedColumnCell: {
       backgroundColor: theme.palette.secondary.light,
       "&:hover": {
-        backgroundColor: theme.palette.secondary.main,
-      },
+        backgroundColor: theme.palette.secondary.main
+      }
     },
     tooltipSpan: {
       overflow: "hidden",
       textOverflow: "ellipsis",
       WebkitLineClamp: 3,
       display: "-webkit-box",
-      WebkitBoxOrient: "vertical",
-    },
+      WebkitBoxOrient: "vertical"
+    }
   })
 );
 
@@ -144,7 +144,7 @@ export interface VirtualizedDnDGridProps {
   /**
    * Index of the selected row
    */
-  selectedRowIndex?: number | null;
+  selectedRowIndex?: number;
   /**
    * DataKeys of the selected columns
    */
@@ -197,7 +197,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   rowHeight = 48,
   headerHeight = 48,
   selectedColumnKeys = [],
-  selectedRowIndex = null,
+  selectedRowIndex,
   tooltipOnCells = true,
   width = "100%",
   height = "400px",
@@ -208,7 +208,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   columnWidthGetter,
   headerCellRenderer,
   handleResizeColumn,
-  onSelectHeaderCell,
+  onSelectHeaderCell
 }) => {
   const classes = useStyles();
   const headerRef = useRef<HTMLDivElement>(null);
@@ -222,7 +222,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
     rowIndex,
     columnIndex,
     key,
-    style,
+    style
   }) => {
     const column = columns[columnIndex];
     const { dataKey } = column;
@@ -237,7 +237,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
         className={clsx(classes.tableCell, classes.flexContainer, {
           [classes.evenRowStyle]: rowIndex % 2 === 0,
           [classes.selectedRowStyle]: selectedRowIndex === rowIndex,
-          [classes.hoverCell]: selectedRowIndex !== rowIndex,
+          [classes.hoverCell]: selectedRowIndex !== rowIndex
         })}
         variant="body"
         style={style}
@@ -287,7 +287,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
         scrollHeight,
         scrollLeft,
         scrollTop,
-        scrollWidth,
+        scrollWidth
       }) => (
         <div style={{ width }}>
           <DragDropContext onDragEnd={onDragEnd}>
@@ -299,7 +299,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                 <div
                   ref={headerRef}
                   className={classes.scrollContainer}
-                  onScroll={(event) => {
+                  onScroll={event => {
                     if (snapshot.isDraggingOver && headerRef.current) {
                       onScroll({
                         clientHeight,
@@ -307,7 +307,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                         scrollTop,
                         scrollWidth,
                         scrollHeight,
-                        scrollLeft: headerRef.current.scrollLeft,
+                        scrollLeft: headerRef.current.scrollLeft
                       });
                     }
                   }}
@@ -336,7 +336,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                             <div
                               id={dataKey}
                               className={clsx(classes.draggableCell, {
-                                [classes.draggingCell]: snapshot.isDragging,
+                                [classes.draggingCell]: snapshot.isDragging
                               })}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
@@ -345,7 +345,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                                 <Checkbox
                                   checked={
                                     selectedColumnKeys.findIndex(
-                                      (key) => key === dataKey
+                                      key => key === dataKey
                                     ) >= 0
                                   }
                                   onChange={() => {
@@ -361,7 +361,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                                     width -
                                     (columnResizeHandleWidth + 1) -
                                     checkboxWidth,
-                                  ...otherColumnProps,
+                                  ...otherColumnProps
                                 },
                                 provided.dragHandleProps
                               )}
@@ -374,12 +374,12 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                                     const newWidth = width + x;
                                     return handleResizeColumn({
                                       dataKey,
-                                      newWidth: Math.max(newWidth, 150),
+                                      newWidth: Math.max(newWidth, 150)
                                     });
                                   }}
                                   position={{
                                     x: 0,
-                                    y: 0,
+                                    y: 0
                                   }}
                                 >
                                   <div className={clsx(classes.resizeHandle)} />
@@ -398,7 +398,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
           </DragDropContext>
           <div style={{ height }}>
             <AutoSizer>
-              {(autoSizerProps) => {
+              {autoSizerProps => {
                 const autoSizerHeight = autoSizerProps.height;
                 const autoSizerWidth = autoSizerProps.width;
                 return (
@@ -414,7 +414,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                     rowHeight={rowHeight!}
                     scrollLeft={scrollLeft}
                     className={classes.gridFocus}
-                    onScroll={(params) => {
+                    onScroll={params => {
                       onScroll(params);
                       headerRef.current?.scrollTo(params.scrollLeft, 0);
                     }}

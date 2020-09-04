@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Grid,
   GridCellRenderer,
@@ -34,11 +34,11 @@ export interface VirtualizedCarouselProps {
   /**
    * Callback called when the user changes the document page from the carousel
    */
-  onChangeDocument?: (docmentIndex: number) => void;
+  onChangeDocument: (docmentIndex: number) => void;
   /**
    * Selected index of document to preview
    */
-  selectedDocumentIndex: number | null;
+  selectedDocumentIndex?: number;
   /**
    * Grid component width
    */
@@ -84,23 +84,38 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
   noContentRenderer
 }) => {
   const classes = useStyles();
-  const [selectedColumn, setSelectedColumn] = React.useState(0);
-  const [activePageLabel, setActivePageLabel] = React.useState(1);
+  const mainGridRef = useRef<Grid>(null);
   const [isModalOpen, setModalOpen] = React.useState(false);
+  const [activePageLabel, setActivePageLabel] = React.useState(1);
+  const [isGridScrolling, setIsGridScrolling] = React.useState(false);
   React.useEffect(() => {
-    null !== selectedDocumentIndex && setSelectedColumn(selectedDocumentIndex);
+    if (undefined !== selectedDocumentIndex) {
+      mainGridRef.current?.scrollToCell({
+        columnIndex: selectedDocumentIndex,
+        rowIndex: 0
+      });
+      setActivePageLabel(selectedDocumentIndex + 1);
+    }
   }, [selectedDocumentIndex]);
+  React.useEffect(() => {
+    if (!isGridScrolling && documentCount > 0) {
+      onChangeDocument(activePageLabel - 1);
+    }
+  }, [isGridScrolling, documentCount]);
   const toggleModal = () => {
     setModalOpen(!isModalOpen);
   };
   const setNextDoc = () => {
-    if (selectedColumn < documentCount - 1) {
-      setSelectedColumn(activePageLabel);
+    if (
+      undefined !== selectedDocumentIndex &&
+      selectedDocumentIndex < documentCount - 1
+    ) {
+      onChangeDocument(activePageLabel);
     }
   };
   const setPrevDoc = () => {
-    if (selectedColumn > 0) {
-      setSelectedColumn(activePageLabel - 2);
+    if (undefined !== selectedDocumentIndex && selectedDocumentIndex > 0) {
+      onChangeDocument(activePageLabel - 2);
     }
   };
   const cellRenderer: GridCellRenderer = ({
@@ -110,11 +125,8 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
     style,
     columnIndex
   }: GridCellProps) => {
-    if (!isScrolling && isVisible) {
-      setSelectedColumn(activePageLabel - 1);
-      null !== selectedDocumentIndex &&
-        onChangeDocument &&
-        onChangeDocument(activePageLabel - 1);
+    if (isScrolling !== isGridScrolling) {
+      setIsGridScrolling(isScrolling);
     }
 
     return (
@@ -133,7 +145,7 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
     if (clientWidth !== 0) {
       pageNumber = Math.round(scrollLeft / clientWidth);
     }
-    if (pageNumber !== selectedColumn) {
+    if (pageNumber !== selectedDocumentIndex) {
       setActivePageLabel(pageNumber + 1);
     }
   };
@@ -171,6 +183,7 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
               )}
               <Grid
                 aria-label="Document preview"
+                ref={mainGridRef}
                 cellRenderer={cellRenderer}
                 columnCount={documentCount}
                 columnWidth={autoSizerWidth}
@@ -178,7 +191,6 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
                 rowCount={1}
                 rowHeight={autoSizerHeight}
                 width={autoSizerWidth}
-                scrollToColumn={selectedColumn}
                 scrollToAlignment="center"
                 onScroll={onScroll}
                 className={classes.grid}
@@ -215,7 +227,8 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
           }
         }}
       >
-        {documentRenderer(selectedColumn)}
+        {undefined !== selectedDocumentIndex &&
+          documentRenderer(selectedDocumentIndex)}
       </Modal>
     </>
   );

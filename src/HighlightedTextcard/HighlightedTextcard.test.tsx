@@ -11,28 +11,20 @@ import HighlightedTextcard, {
 Enzyme.configure({ adapter: new Adapter() });
 
 const props: HighlightedTextcardProps = {
-  data: [
-    {
-      key: "test",
-      positions: [
-        { key: { start: 0, stop: 5 }, value: { start: 6, stop: 55 } },
-        { key: { start: 57, stop: 200 }, value: { start: 252, stop: 500 } }
-      ]
-    },
-    {
-      key: "test2",
-      positions: [
-        {
-          key: { start: 2200, stop: 2250 },
-          value: { start: 2500, stop: 3000 }
-        }
-      ]
-    },
-    {
-      key: "test3",
-      positions: [{ value: { start: 1100, stop: 2000 } }]
-    }
-  ],
+  data: {
+    test: [
+      { key: { start: 0, stop: 5 }, value: { start: 6, stop: 55 } },
+      { key: { start: 57, stop: 200 }, value: { start: 252, stop: 500 } }
+    ],
+    test2: [
+      {
+        key: { start: 2200, stop: 2250 },
+        value: { start: 2500, stop: 3000 }
+      }
+    ],
+    test3: [{ value: { start: 1100, stop: 2000 } }]
+  },
+
   keys: ["test", "test2", "test3"],
   content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero commodo, lobortis quam et, elementum risus. Nullam tempus viverra tortor, hendrerit sodales sem dapibus eu. Duis nec placerat purus. Etiam varius aliquet efficitur. Duis scelerisque mattis ullamcorper. Quisque mollis magna in varius dictum. Sed accumsan, tortor luctus molestie fermentum, sapien dolor condimentum turpis, eget volutpat nibh elit aliquet massa. Nullam tempor massa metus. Proin ultrices tortor orci. Nunc accumsan viverra risus. Suspendisse consequat magna ac vehicula vestibulum.
 
@@ -45,17 +37,14 @@ Etiam condimentum dui sed sem tincidunt, non accumsan urna convallis. Vivamus da
 
 const props2: HighlightedTextcardProps = {
   ...props,
-  data: []
+  data: {}
 };
 
 const props3: HighlightedTextcardProps = {
   ...props,
-  data: [
-    {
-      key: "test",
-      positions: []
-    }
-  ]
+  data: {
+    test: []
+  }
 };
 
 const props4: HighlightedTextcardProps = {
@@ -73,8 +62,9 @@ describe("HighlightedTextcard", () => {
     "testing HighlightedTextWithProps",
     (props: HighlightedTextcardProps) => {
       let positionList: number[] = [0, props.content.length];
-      props.data.forEach(d => {
-        d.positions.forEach(pos => {
+
+      for (const dataKey in props.data) {
+        props.data[dataKey].forEach(pos => {
           if (pos.key) {
             positionList.push(pos.key.start);
             positionList.push(pos.key.stop);
@@ -84,7 +74,7 @@ describe("HighlightedTextcard", () => {
             positionList.push(pos.value.stop);
           }
         });
-      });
+      }
 
       // Remove duplicates
       positionList = positionList.filter((c, index, originalPositionList) => {
