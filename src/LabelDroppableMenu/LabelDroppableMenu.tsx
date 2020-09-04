@@ -12,7 +12,7 @@ import {
   ListItemIcon,
   ListItemText,
   Input,
-  InputAdornment,
+  InputAdornment
 } from "@material-ui/core";
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
@@ -25,28 +25,28 @@ const useStyles = makeStyles((theme: Theme) =>
     flexContainer: {
       display: "flex",
       alignItems: "center",
-      boxSizing: "border-box",
+      boxSizing: "border-box"
     },
     cell: {
       flex: 1,
       paddingRight: theme.spacing(1),
-      borderBottom: "none",
+      borderBottom: "none"
     },
     labelComponent: {
-      flex: 1,
+      flex: 1
     },
     numericCell: {
-      textAlign: "right",
+      textAlign: "right"
     },
     input: {
-      fontSize: theme.typography.fontSize,
+      fontSize: theme.typography.fontSize
     },
     labelSpan: {
       width: 10,
       overflow: "hidden",
       textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
-    },
+      whiteSpace: "nowrap"
+    }
   })
 );
 
@@ -54,7 +54,11 @@ export type LabelDroppableMenuProps = {
   numeric?: boolean;
   label: string;
   id: string;
-  droppableListComponent?: React.ReactNode;
+  droppableListItems?: {
+    label: string;
+    onClick: (id: string) => void;
+    icon: React.ReactNode;
+  }[];
   onLabelEdited?: (value: string) => void;
   onDeleteClick?: () => void;
 };
@@ -63,9 +67,9 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
   label,
   numeric,
   id,
-  droppableListComponent,
+  droppableListItems,
   onLabelEdited,
-  onDeleteClick,
+  onDeleteClick
 }) => {
   const classes = useStyles();
   const [editingLabel, setEditingLabel] = React.useState(label);
@@ -91,7 +95,7 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
       variant="head"
       padding="none"
       className={clsx(classes.flexContainer, classes.cell, {
-        [classes.numericCell]: numeric,
+        [classes.numericCell]: numeric
       })}
     >
       {isEditingLabel ? (
@@ -130,7 +134,7 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
         </span>
       )}
       <PopupState variant="popover" popupId={id}>
-        {(popupState) =>
+        {popupState =>
           !isEditingLabel && (
             <>
               <IconButton {...bindTrigger(popupState)}>
@@ -141,10 +145,9 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                 transformOrigin={{
                   vertical: "top",
-                  horizontal: "right",
+                  horizontal: "right"
                 }}
               >
-                {!onDeleteClick && droppableListComponent}
                 <List>
                   <ListItem
                     button
@@ -166,6 +169,22 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
                       <ListItemText primary="Delete" />
                     </ListItem>
                   )}
+                  {droppableListItems &&
+                    droppableListItems.map(
+                      ({ icon, label, onClick }, index) => (
+                        <ListItem
+                          button
+                          onClick={() => {
+                            popupState.close();
+                            onClick(id);
+                          }}
+                          key={index}
+                        >
+                          <ListItemIcon>{icon}</ListItemIcon>
+                          <ListItemText primary={label} />
+                        </ListItem>
+                      )
+                    )}
                 </List>
               </Popover>
             </>

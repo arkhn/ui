@@ -4,7 +4,7 @@ import VirtualizedDnDGrid, {
   VirtualizedDnDGridProps,
   ColumnData,
   HeaderCellRenderer,
-  HandleResizeColumn,
+  HandleResizeColumn
 } from "./VirtualizedDnDGrid";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import { TableDataType } from "../SelectableTable/SelectableTable";
@@ -20,11 +20,11 @@ const sample: Sample[] = [
     237,
     9.0,
     37,
-    4.3,
+    4.3
   ],
   ["Eclair", 262, 16.0, 24, 6.0],
   ["Cupcake", 305, 3.7, 67, 4.3],
-  ["Gingerbread", 356, 16.0, 49, 3.9],
+  ["Gingerbread", 356, 16.0, 49, 3.9]
 ];
 
 function createData(
@@ -49,7 +49,7 @@ function createData(
     protein5: protein,
     protein6: protein,
     protein7: protein,
-    protein8: protein,
+    protein8: protein
   };
 }
 
@@ -74,17 +74,17 @@ const reorderColumns = (
 
 export default {
   title: "VirtualizedDnDGrid",
-  component: VirtualizedDnDGrid,
+  component: VirtualizedDnDGrid
 } as Meta;
 
-const Template: Story<VirtualizedDnDGridProps> = (props) => {
+const Template: Story<VirtualizedDnDGridProps> = props => {
   const [columns, setColumns] = React.useState(props.columns);
   const [selectedColumnKeys, setSelectedColumnKeys] = React.useState<string[]>(
     []
   );
-  const [selectedRowIndex, setSelectedRowIndex] = React.useState<number | null>(
-    null
-  );
+  const [selectedRowIndex, setSelectedRowIndex] = React.useState<
+    number | undefined
+  >();
   const onDragEnd = (result: DropResult, provided: ResponderProvided) => {
     if (!result.destination) {
       return;
@@ -97,10 +97,10 @@ const Template: Story<VirtualizedDnDGridProps> = (props) => {
     setColumns(reorderedColumns);
   };
   const handleResizeColumn: HandleResizeColumn = ({ dataKey, newWidth }) => {
-    const newColumns = columns.map((column) => {
+    const newColumns = columns.map(column => {
       return {
         ...column,
-        width: dataKey === column.dataKey ? newWidth : column.width,
+        width: dataKey === column.dataKey ? newWidth : column.width
       };
     });
     setColumns(newColumns);
@@ -111,7 +111,7 @@ const Template: Story<VirtualizedDnDGridProps> = (props) => {
   ) => (
     <div
       style={{
-        width: width,
+        width: width
       }}
       {...draggableHandleProps}
     >
@@ -119,16 +119,16 @@ const Template: Story<VirtualizedDnDGridProps> = (props) => {
         label={label}
         numeric={numeric}
         id={dataKey}
-        onLabelEdited={(value) => onEditColumnName(dataKey, value)}
+        onLabelEdited={value => onEditColumnName(dataKey, value)}
         onDeleteClick={() => onDeleteColumn(dataKey)}
       />
     </div>
   );
   const onEditColumnName = (dataKey: string, value: string) => {
-    const newColumns = columns.map((column) => {
+    const newColumns = columns.map(column => {
       return {
         ...column,
-        label: column.dataKey === dataKey ? value : column.label,
+        label: column.dataKey === dataKey ? value : column.label
       };
     });
 
@@ -136,8 +136,8 @@ const Template: Story<VirtualizedDnDGridProps> = (props) => {
   };
 
   const onDeleteColumn = (dataKey: string) => {
-    const columnIndex = columns.findIndex((col) => col.dataKey === dataKey);
-    const dataKeyIndex = selectedColumnKeys.findIndex((key) => key === dataKey);
+    const columnIndex = columns.findIndex(col => col.dataKey === dataKey);
+    const dataKeyIndex = selectedColumnKeys.findIndex(key => key === dataKey);
     if (dataKeyIndex >= 0) {
       const newSelectedColumns = [...selectedColumnKeys];
       newSelectedColumns.splice(dataKeyIndex, 1);
@@ -151,7 +151,7 @@ const Template: Story<VirtualizedDnDGridProps> = (props) => {
   };
 
   const handleColumnSelect = (dataKey: string) => {
-    const dataKeyIndex = selectedColumnKeys.findIndex((key) => key === dataKey);
+    const dataKeyIndex = selectedColumnKeys.findIndex(key => key === dataKey);
     if (dataKeyIndex >= 0) {
       const newSelectedColumns = [...selectedColumnKeys];
       newSelectedColumns.splice(dataKeyIndex, 1);
@@ -187,79 +187,79 @@ Basic.args = {
       width: 200,
       label: "Dessert",
       dataKey: "dessert",
-      isDragDisabled: false,
+      isDragDisabled: false
     },
     {
       width: 200,
       label: "Calories\u00A0(g)",
       dataKey: "calories",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Fat\u00A0(g)",
       dataKey: "fat",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Carbs\u00A0(g)",
       dataKey: "carbs",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein1",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein2",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein3",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein4",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein5",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein6",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein7",
-      numeric: true,
+      numeric: true
     },
     {
       width: 200,
       label: "Protein\u00A0(g)",
       dataKey: "protein8",
-      numeric: true,
-    },
-  ],
+      numeric: true
+    }
+  ]
 };
