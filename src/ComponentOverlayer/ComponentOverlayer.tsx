@@ -1,8 +1,5 @@
 import React from "react";
-import clsx from "clsx";
-import { Fab, makeStyles, Theme, createStyles } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
+import { makeStyles, Theme, createStyles } from "@material-ui/core";
 
 const useStyles = makeStyles<
   Theme,
