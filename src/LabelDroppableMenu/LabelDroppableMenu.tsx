@@ -17,7 +17,6 @@ import {
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import EditIcon from "@material-ui/icons/EditOutlined";
-import DeleteIcon from "@material-ui/icons/DeleteOutline";
 import DoneIcon from "@material-ui/icons/Done";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -60,7 +59,7 @@ export type LabelDroppableMenuProps = {
     icon: React.ReactNode;
   }[];
   onLabelEdited?: (value: string) => void;
-  onDeleteClick?: () => void;
+  editIconProps?: React.ComponentProps<typeof EditIcon>;
 };
 
 const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
@@ -69,7 +68,7 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
   id,
   droppableListItems,
   onLabelEdited,
-  onDeleteClick
+  editIconProps
 }) => {
   const classes = useStyles();
   const [editingLabel, setEditingLabel] = React.useState(label);
@@ -157,18 +156,10 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
                     }}
                   >
                     <ListItemIcon>
-                      <EditIcon />
+                      <EditIcon {...editIconProps} />
                     </ListItemIcon>
                     <ListItemText primary="Edit" />
                   </ListItem>
-                  {onDeleteClick && (
-                    <ListItem button onClick={onDeleteClick}>
-                      <ListItemIcon>
-                        <DeleteIcon />
-                      </ListItemIcon>
-                      <ListItemText primary="Delete" />
-                    </ListItem>
-                  )}
                   {droppableListItems &&
                     droppableListItems.map(
                       ({ icon, label, onClick }, index) => (
