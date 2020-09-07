@@ -15,7 +15,6 @@ describe("NavBar", () => {
   it("Render Test", () => {
     const wrapper = shallow(<NavBar {...props} />);
     const toolBar = wrapper.find(Toolbar);
-    console.log(toolBar.debug());
     expect(toolBar.text()).toEqual(props.title);
   });
 });

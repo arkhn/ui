@@ -23,7 +23,6 @@ describe("ComponentOverlayer tests", () => {
     );
     const child = wrapper.find("#child");
     const overlayerChild = wrapper.find("#overlayerChild");
-    console.log(wrapper.debug());
     expect(child).toHaveLength(1);
     expect(overlayerChild).toHaveLength(0);
   });

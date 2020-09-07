@@ -13,8 +13,6 @@ export default {
   }
 } as Meta;
 
-const onClickButton = action("Clicked on button");
-
 const Template: Story<ComponentOverlayerProps> = args => {
   return (
     <ComponentOverlayer {...args}>
@@ -25,7 +23,6 @@ const Template: Story<ComponentOverlayerProps> = args => {
 
 export const Default = Template.bind({});
 Default.args = {
-  onClickButton,
   componentToDisplay: (
     <div style={{ width: "200px", height: "200px", backgroundColor: "red" }} />
   )
