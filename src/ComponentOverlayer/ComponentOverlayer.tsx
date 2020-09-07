@@ -37,8 +37,6 @@ export type ComponentOverlayerProps = {
   open: boolean;
   children: React.ReactNode;
   componentToDisplay?: React.ReactNode;
-  buttonPosition?: "right" | "left";
-  onClickButton?: () => void;
   width: string | number;
   height: string | number;
 };
@@ -47,28 +45,16 @@ const ComponentOverlayer: React.FC<ComponentOverlayerProps> = ({
   open,
   children,
   componentToDisplay,
-  buttonPosition = "right",
-  onClickButton = () => {},
   width,
   height
 }) => {
   const classes = useStyles({ width, height });
   return (
-    <div
-      className={clsx(classes.container, {
-        [classes.positionRight]: buttonPosition === "right",
-        [classes.positionLeft]: buttonPosition === "left"
-      })}
-    >
-      <Fab className={classes.fabButton} onClick={onClickButton}>
-        {open ? <RemoveIcon /> : <AddIcon />}
-      </Fab>
-      <div className={classes.childrenWrapper}>
-        {open && (
-          <div className={classes.absoluteContainer}>{componentToDisplay}</div>
-        )}
-        {children}
-      </div>
+    <div className={classes.childrenWrapper}>
+      {open && (
+        <div className={classes.absoluteContainer}>{componentToDisplay}</div>
+      )}
+      {children}
     </div>
   );
 };
