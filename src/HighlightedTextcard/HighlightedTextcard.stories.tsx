@@ -18,30 +18,36 @@ const Template: Story<HighlightedTextcardProps> = args => (
 
 export const Default = Template.bind({});
 
-const callback = (pos: Interval[]) => {
+const callback = (pos: string[]) => {
   let result = "";
   pos.forEach(p => {
-    if (p) result += `(${p.start},${p.stop}) `;
+    if (p) result += `(${p}) `;
   });
-  action(`Clicked at position: ${result}`)(result);
+  action(`Clicked at keys: ${result}`)(result);
 };
 
 Default.args = {
   data: {
     group1: [
-      { key: { start: 0, stop: 80 }, value: { start: 6, stop: 55 } },
-      { key: { start: 57, stop: 200 }, value: { start: 252, stop: 500 } }
+      [
+        [0, 80],
+        [6, 55]
+      ],
+      [
+        [57, 200],
+        [252, 500]
+      ]
     ],
     group2: [
-      {
-        key: { start: 2200, stop: 2250 },
-        value: { start: 2500, stop: 3000 }
-      }
+      [
+        [2200, 2250],
+        [2500, 3000]
+      ]
     ],
-    group3: [{ value: { start: 1100, stop: 2000 } }],
-    group4: [{ value: { start: 1000, stop: 1200 } }]
+    group3: [[null, [1100, 2000]]],
+    group4: [[null, [1000, 1200]]]
   },
-  keys: ["group1", "group2", "group3", "group4"],
+  keysToShow: ["group1", "group2", "group3", "group4"],
   onIntervalClick: callback,
   content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero commodo, lobortis quam et, elementum risus. Nullam tempus viverra tortor, hendrerit sodales sem dapibus eu. Duis nec placerat purus. Etiam varius aliquet efficitur. Duis scelerisque mattis ullamcorper. Quisque mollis magna in varius dictum. Sed accumsan, tortor luctus molestie fermentum, sapien dolor condimentum turpis, eget volutpat nibh elit aliquet massa. Nullam tempor massa metus. Proin ultrices tortor orci. Nunc accumsan viverra risus. Suspendisse consequat magna ac vehicula vestibulum.
 

@@ -221,6 +221,20 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
         position >= interval.start && position <= interval.stop && interval
     );
 
+  const onClickSpan = (intervals: Interval[]) => {
+    if (!onIntervalClick || intervals.length <= 0) {
+      return;
+    }
+
+    const uniqueIntervalKeys: string[] = [];
+    for (const interval of intervals) {
+      if (interval.key && !uniqueIntervalKeys.includes(interval.key)) {
+        uniqueIntervalKeys.push(interval.key);
+      }
+    }
+    onIntervalClick(uniqueIntervalKeys);
+  };
+
   const getText = () => {
     const result = [];
     for (let i = 1; i < positionList.length; i++) {
@@ -231,11 +245,7 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
         <span
           key={i}
           className={getSpanClassName(intervals, classes)}
-          onClick={() =>
-            onIntervalClick &&
-            intervals.length > 0 &&
-            onIntervalClick(intervals.map(interval => interval.key ?? ""))
-          }
+          onClick={() => onClickSpan(intervals)}
         >
           {content.substring(positionList[i - 1], positionList[i])}
         </span>
