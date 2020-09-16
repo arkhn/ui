@@ -123,9 +123,12 @@ export interface Position {
   value: Interval;
 }
 
-export interface HighlightedTextcardData {
-  [key: string]: Position[];
-}
+export type HighlightedTextcardData = {
+  /**
+   * [value, [keyStartPos, keyEndPos], [valueStartPos, valueEndPos]]
+   */
+  [key: string]: [[number, number] | null, [number, number] | null][];
+};
 
 export interface HighlightedTextcardProps {
   /**
@@ -135,21 +138,21 @@ export interface HighlightedTextcardProps {
   /**
    * Data of position intervals and keys of identified text
    */
-  data: HighlightedTextcardData;
+  data?: HighlightedTextcardData;
   /**
    * Keys of identified text to show. An empty array will highlight all interval in data
    */
-  keys: string[];
+  keysToShow?: string[];
   /**
    * Callback function returning the key on interval click
    */
-  onIntervalClick?: (intervals: Interval[]) => void;
+  onIntervalClick?: (keys: string[]) => void;
 }
 
 const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   content,
-  data,
-  keys = [],
+  data = {},
+  keysToShow = [],
   onIntervalClick
 }) => {
   const classes = useStyles();
@@ -157,30 +160,39 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   const intervalList: Interval[] = [];
 
   for (const dataKey in data) {
-    for (const position of data[dataKey]) {
-      const show = keys.length === 0 || keys.includes(dataKey);
+    const dataValue = data[dataKey];
+    if (dataValue) {
+      const show = keysToShow.length === 0 || keysToShow.includes(dataKey);
 
-      if (position.key) {
-        intervalList.push({
-          ...position.key,
-          key: dataKey,
-          type: "key",
-          colored: show
-        });
-        intervalList.push({
-          ...position.value,
-          key: dataKey,
-          type: "value",
-          colored: show
-        });
-      } else {
-        intervalList.push({
-          ...position.value,
-          key: dataKey,
-          type: "onlyValueColor",
-          colored: show
-        });
-      }
+      dataValue.forEach(pos => {
+        const [keyPos, valuePos] = pos;
+        if (valuePos) {
+          if (keyPos) {
+            intervalList.push({
+              start: keyPos[0],
+              stop: keyPos[1],
+              key: dataKey,
+              type: "key",
+              colored: show
+            });
+            intervalList.push({
+              start: valuePos[0],
+              stop: valuePos[1],
+              key: dataKey,
+              type: "value",
+              colored: show
+            });
+          } else {
+            intervalList.push({
+              start: valuePos[0],
+              stop: valuePos[1],
+              key: dataKey,
+              type: "onlyValueColor",
+              colored: show
+            });
+          }
+        }
+      });
     }
   }
 
@@ -222,7 +234,7 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
           onClick={() =>
             onIntervalClick &&
             intervals.length > 0 &&
-            onIntervalClick(intervals)
+            onIntervalClick(intervals.map(interval => interval.key ?? ""))
           }
         >
           {content.substring(positionList[i - 1], positionList[i])}
@@ -233,11 +245,13 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
   };
 
   return (
-    <Container className={classes.scrollContainer} maxWidth="sm">
-      <Paper>
-        <pre className={classes.text}>{getText()}</pre>
-      </Paper>
-    </Container>
+    <Paper className={classes.scrollContainer}>
+      <Container maxWidth="sm">
+        <div>
+          <pre className={classes.text}>{getText()}</pre>
+        </div>
+      </Container>
+    </Paper>
   );
 };
 

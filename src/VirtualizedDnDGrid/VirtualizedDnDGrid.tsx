@@ -191,6 +191,10 @@ export interface VirtualizedDnDGridProps {
    * Displays a tooltip with cell value when hovered
    */
   tooltipOnCells?: boolean;
+  /**
+   * Optional function called to render cells.
+   */
+  cellRenderer?: GridCellRenderer;
 }
 
 const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
@@ -208,7 +212,8 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   columnWidthGetter,
   headerCellRenderer,
   handleResizeColumn,
-  onSelectHeaderCell
+  onSelectHeaderCell,
+  cellRenderer
 }) => {
   const classes = useStyles();
   const headerRef = useRef<HTMLDivElement>(null);
@@ -218,12 +223,16 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
     mainGridRef.current?.recomputeGridSize();
   }, [columns]);
 
-  const cellRenderer: GridCellRenderer = ({
+  const renderCell: GridCellRenderer = ({
     rowIndex,
     columnIndex,
     key,
-    style
+    style,
+    ...props
   }) => {
+    if (cellRenderer) {
+      return cellRenderer({ ...props, rowIndex, columnIndex, key, style });
+    }
     const column = columns[columnIndex];
     const { dataKey } = column;
     const spanDataValue = (
@@ -405,7 +414,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                   <Grid
                     aria-label="VirtualizedDragAndropGrid"
                     ref={mainGridRef}
-                    cellRenderer={cellRenderer}
+                    cellRenderer={renderCell}
                     columnCount={columns.length}
                     columnWidth={columnWidthGetter}
                     height={autoSizerHeight}

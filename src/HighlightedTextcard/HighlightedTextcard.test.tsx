@@ -13,19 +13,25 @@ Enzyme.configure({ adapter: new Adapter() });
 const props: HighlightedTextcardProps = {
   data: {
     test: [
-      { key: { start: 0, stop: 5 }, value: { start: 6, stop: 55 } },
-      { key: { start: 57, stop: 200 }, value: { start: 252, stop: 500 } }
+      [
+        [0, 5],
+        [6, 55]
+      ],
+      [
+        [57, 200],
+        [252, 500]
+      ]
     ],
     test2: [
-      {
-        key: { start: 2200, stop: 2250 },
-        value: { start: 2500, stop: 3000 }
-      }
+      [
+        [2200, 2250],
+        [2500, 3000]
+      ]
     ],
-    test3: [{ value: { start: 1100, stop: 2000 } }]
+    test3: [[null, [1100, 2000]]]
   },
 
-  keys: ["test", "test2", "test3"],
+  keysToShow: ["test", "test2", "test3"],
   content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero commodo, lobortis quam et, elementum risus. Nullam tempus viverra tortor, hendrerit sodales sem dapibus eu. Duis nec placerat purus. Etiam varius aliquet efficitur. Duis scelerisque mattis ullamcorper. Quisque mollis magna in varius dictum. Sed accumsan, tortor luctus molestie fermentum, sapien dolor condimentum turpis, eget volutpat nibh elit aliquet massa. Nullam tempor massa metus. Proin ultrices tortor orci. Nunc accumsan viverra risus. Suspendisse consequat magna ac vehicula vestibulum.
 
 Ut luctus risus a neque vehicula varius. Morbi felis metus, molestie et sodales in, luctus nec metus. Quisque ut consectetur mi. Nulla cursus lectus dolor, eu posuere felis vehicula vel. Nunc ac venenatis libero. Curabitur lobortis mollis nibh sed porttitor. Aliquam erat volutpat. Aenean dapibus felis at ligula pulvinar posuere. Suspendisse purus eros, blandit id quam sed, vestibulum vulputate arcu. Quisque mattis a urna auctor aliquet. Nullam egestas purus augue, sit amet fermentum eros scelerisque aliquam. Curabitur sollicitudin dui suscipit risus gravida finibus. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Mauris enim justo, aliquam vel facilisis at, eleifend vitae arcu.
@@ -49,12 +55,12 @@ const props3: HighlightedTextcardProps = {
 
 const props4: HighlightedTextcardProps = {
   ...props,
-  keys: ["test", "test2"]
+  keysToShow: ["test", "test2"]
 };
 
 const props5: HighlightedTextcardProps = {
   ...props,
-  keys: ["test", "test3"]
+  keysToShow: ["test", "test3"]
 };
 
 describe("HighlightedTextcard", () => {
@@ -65,13 +71,14 @@ describe("HighlightedTextcard", () => {
 
       for (const dataKey in props.data) {
         props.data[dataKey].forEach(pos => {
-          if (pos.key) {
-            positionList.push(pos.key.start);
-            positionList.push(pos.key.stop);
+          const [key, value] = pos;
+          if (key) {
+            positionList.push(key[0]);
+            positionList.push(key[1]);
           }
-          if (pos.value) {
-            positionList.push(pos.value.start);
-            positionList.push(pos.value.stop);
+          if (value) {
+            positionList.push(value[0]);
+            positionList.push(value[1]);
           }
         });
       }
