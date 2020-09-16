@@ -127,7 +127,7 @@ export type HighlightedTextcardData = {
   /**
    * [value, [keyStartPos, keyEndPos], [valueStartPos, valueEndPos]]
    */
-  [key: string]: [string, [number, number] | null, [number, number] | null][];
+  [key: string]: [[number, number] | null, [number, number] | null][];
 };
 
 export interface HighlightedTextcardProps {
@@ -164,8 +164,8 @@ const HighlightedTextcard: React.FC<HighlightedTextcardProps> = ({
     if (dataValue) {
       const show = keysToShow.length === 0 || keysToShow.includes(dataKey);
 
-      dataValue.forEach((pos, index) => {
-        const [value, keyPos, valuePos] = pos;
+      dataValue.forEach(pos => {
+        const [keyPos, valuePos] = pos;
         if (valuePos) {
           if (keyPos) {
             intervalList.push({
