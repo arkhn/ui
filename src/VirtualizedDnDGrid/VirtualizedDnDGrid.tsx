@@ -195,6 +195,10 @@ export interface VirtualizedDnDGridProps {
    * Optional function called to render cells.
    */
   cellRenderer?: GridCellRenderer;
+  /**
+   *Number of rows to display
+   */
+  rowCount?: number;
 }
 
 const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
@@ -213,7 +217,8 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   headerCellRenderer,
   handleResizeColumn,
   onSelectHeaderCell,
-  cellRenderer
+  cellRenderer,
+  rowCount
 }) => {
   const classes = useStyles();
   const headerRef = useRef<HTMLDivElement>(null);
@@ -419,7 +424,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                     columnWidth={columnWidthGetter}
                     height={autoSizerHeight}
                     width={autoSizerWidth}
-                    rowCount={data.length}
+                    rowCount={rowCount ?? data.length}
                     rowHeight={rowHeight!}
                     scrollLeft={scrollLeft}
                     className={classes.gridFocus}
