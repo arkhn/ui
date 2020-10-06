@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import ReactDOM from "react-dom";
 import clsx from "clsx";
 import { createStyles, Theme, makeStyles } from "@material-ui/core/styles";
 import TableCell from "@material-ui/core/TableCell";
@@ -14,7 +15,10 @@ import {
   Draggable,
   DropResult,
   ResponderProvided,
-  DraggableProvidedDragHandleProps
+  DraggableProvidedDragHandleProps,
+  DraggableProvided,
+  DraggableStateSnapshot,
+  DraggableRubric
 } from "react-beautiful-dnd";
 import ReactDraggable from "react-draggable";
 import { Checkbox, Tooltip } from "@material-ui/core";
@@ -221,12 +225,13 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   rowCount
 }) => {
   const classes = useStyles();
-  const headerRef = useRef<HTMLDivElement>(null);
   const mainGridRef = useRef<Grid>(null);
+  const [headerGridRef, setHeaderGridRef] = React.useState<null | Grid>(null);
 
   useEffect(() => {
     mainGridRef.current?.recomputeGridSize();
-  }, [columns]);
+    headerGridRef?.recomputeGridSize();
+  }, [columns, headerGridRef]);
 
   const renderCell: GridCellRenderer = ({
     rowIndex,
@@ -280,6 +285,75 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
     );
   };
 
+  const renderHeaderCell: GridCellRenderer = ({ columnIndex, style }) => {
+    const { dataKey, isDragDisabled, width, ...otherColumnProps } = columns[
+      columnIndex
+    ];
+    return (
+      <Draggable
+        draggableId={dataKey}
+        index={columnIndex}
+        key={dataKey}
+        isDragDisabled={isDragDisabled}
+      >
+        {(provided, snapshot) => (
+          <div
+            id={dataKey}
+            className={clsx(classes.draggableCell, {
+              [classes.draggingCell]: snapshot.isDragging
+            })}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            style={{
+              ...provided.draggableProps.style,
+              ...style
+            }}
+          >
+            <div>
+              <Checkbox
+                checked={
+                  selectedColumnKeys.findIndex(key => key === dataKey) >= 0
+                }
+                onChange={() => {
+                  handleHeaderCellClick(dataKey);
+                }}
+              />
+            </div>
+            {headerCellRenderer(
+              {
+                dataKey,
+                isDragDisabled,
+                width: width - (columnResizeHandleWidth + 1) - checkboxWidth,
+                ...otherColumnProps
+              },
+              provided.dragHandleProps
+            )}
+            {!snapshot.isDragging && (
+              <ReactDraggable
+                axis="x"
+                defaultClassName="ReactDragHandle"
+                defaultClassNameDragging="ReactDragHandleActive"
+                onStop={(event, { x }) => {
+                  const newWidth = width + x;
+                  return handleResizeColumn({
+                    dataKey,
+                    newWidth: Math.max(newWidth, 150)
+                  });
+                }}
+                position={{
+                  x: 0,
+                  y: 0
+                }}
+              >
+                <div className={clsx(classes.resizeHandle)} />
+              </ReactDraggable>
+            )}
+          </div>
+        )}
+      </Draggable>
+    );
+  };
+
   const handleCellClick = (rowIndex: number) => {
     if (onRowClick) {
       onRowClick(rowIndex);
@@ -293,153 +367,123 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   };
 
   return (
-    <ScrollSync>
-      {({
-        clientHeight,
-        clientWidth,
-        onScroll,
-        scrollHeight,
-        scrollLeft,
-        scrollTop,
-        scrollWidth
-      }) => (
-        <div style={{ width }}>
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-              droppableId="VirtualizedGridDroppable"
-              direction="horizontal"
-            >
-              {(provided, snapshot) => (
-                <div
-                  ref={headerRef}
-                  className={classes.scrollContainer}
-                  onScroll={event => {
-                    if (snapshot.isDraggingOver && headerRef.current) {
-                      onScroll({
-                        clientHeight,
-                        clientWidth,
-                        scrollTop,
-                        scrollWidth,
-                        scrollHeight,
-                        scrollLeft: headerRef.current.scrollLeft
-                      });
-                    }
-                  }}
-                >
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={clsx(
-                      classes.flexContainer,
-                      classes.droppableContainer
-                    )}
-                    style={{ height: headerHeight }}
-                  >
-                    {columns.map(
-                      (
-                        { dataKey, isDragDisabled, width, ...otherColumnProps },
-                        index
-                      ) => (
-                        <Draggable
-                          draggableId={dataKey}
-                          index={index}
-                          key={dataKey}
-                          isDragDisabled={isDragDisabled}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              id={dataKey}
-                              className={clsx(classes.draggableCell, {
-                                [classes.draggingCell]: snapshot.isDragging
-                              })}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                            >
-                              <div>
-                                <Checkbox
-                                  checked={
-                                    selectedColumnKeys.findIndex(
-                                      key => key === dataKey
-                                    ) >= 0
-                                  }
-                                  onChange={() => {
-                                    handleHeaderCellClick(dataKey);
-                                  }}
-                                />
-                              </div>
-                              {headerCellRenderer(
-                                {
-                                  dataKey,
-                                  isDragDisabled,
-                                  width:
-                                    width -
-                                    (columnResizeHandleWidth + 1) -
-                                    checkboxWidth,
-                                  ...otherColumnProps
-                                },
-                                provided.dragHandleProps
-                              )}
-                              {!snapshot.isDragging && (
-                                <ReactDraggable
-                                  axis="x"
-                                  defaultClassName="ReactDragHandle"
-                                  defaultClassNameDragging="ReactDragHandleActive"
-                                  onStop={(event, { x }) => {
-                                    const newWidth = width + x;
-                                    return handleResizeColumn({
-                                      dataKey,
-                                      newWidth: Math.max(newWidth, 150)
-                                    });
-                                  }}
-                                  position={{
-                                    x: 0,
-                                    y: 0
-                                  }}
-                                >
-                                  <div className={clsx(classes.resizeHandle)} />
-                                </ReactDraggable>
-                              )}
+    <div style={{ width, height }}>
+      <ScrollSync>
+        {({ onScroll, scrollLeft }) => (
+          <AutoSizer>
+            {autoSizerProps => {
+              const autoSizerHeight = autoSizerProps.height;
+              const autoSizerWidth = autoSizerProps.width;
+              return (
+                <>
+                  <DragDropContext onDragEnd={onDragEnd}>
+                    <Droppable
+                      droppableId="VirtualizedGridDroppable"
+                      direction="horizontal"
+                      mode="virtual"
+                      renderClone={(
+                        provided: DraggableProvided,
+                        snapshot: DraggableStateSnapshot,
+                        rubric: DraggableRubric
+                      ) => {
+                        const column = columns[rubric.source.index];
+                        const {
+                          dataKey,
+                          width,
+                          isDragDisabled,
+                          ...otherColumnProps
+                        } = column;
+                        return (
+                          <div
+                            id={dataKey}
+                            className={clsx(classes.draggableCell, {
+                              [classes.draggingCell]: snapshot.isDragging
+                            })}
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                          >
+                            <div>
+                              <Checkbox
+                                checked={
+                                  selectedColumnKeys.findIndex(
+                                    key => key === dataKey
+                                  ) >= 0
+                                }
+                                onChange={() => {
+                                  handleHeaderCellClick(dataKey);
+                                }}
+                              />
                             </div>
-                          )}
-                        </Draggable>
-                      )
-                    )}
-                    {provided.placeholder}
-                  </div>
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
-          <div style={{ height }}>
-            <AutoSizer>
-              {autoSizerProps => {
-                const autoSizerHeight = autoSizerProps.height;
-                const autoSizerWidth = autoSizerProps.width;
-                return (
+                            {headerCellRenderer(
+                              {
+                                dataKey,
+                                isDragDisabled,
+                                width:
+                                  width -
+                                  (columnResizeHandleWidth + 1) -
+                                  checkboxWidth,
+                                ...otherColumnProps
+                              },
+                              provided.dragHandleProps
+                            )}
+                          </div>
+                        );
+                      }}
+                    >
+                      {(droppableProvided, snapshot) => (
+                        <Grid
+                          rowCount={1}
+                          columnCount={columns.length}
+                          className={clsx(classes.gridFocus)}
+                          ref={ref => {
+                            // react-virtualized has no way to get the list's ref that I can so
+                            // So we use the `ReactDOM.findDOMNode(ref)` escape hatch to get the ref
+                            if (ref) {
+                              setHeaderGridRef(ref);
+                              // eslint-disable-next-line react/no-find-dom-node
+                              const whatHasMyLifeComeTo = ReactDOM.findDOMNode(
+                                ref
+                              );
+                              if (whatHasMyLifeComeTo instanceof HTMLElement) {
+                                droppableProvided.innerRef(whatHasMyLifeComeTo);
+                              }
+                            }
+                          }}
+                          columnWidth={columnWidthGetter}
+                          rowHeight={headerHeight}
+                          width={autoSizerWidth}
+                          scrollLeft={scrollLeft}
+                          onScroll={onScroll}
+                          height={headerHeight}
+                          cellRenderer={renderHeaderCell}
+                          estimatedColumnSize={
+                            columns.length * columnWidthGetter({ index: 0 })
+                          }
+                        />
+                      )}
+                    </Droppable>
+                  </DragDropContext>
                   <Grid
                     aria-label="VirtualizedDragAndropGrid"
                     ref={mainGridRef}
                     cellRenderer={renderCell}
                     columnCount={columns.length}
                     columnWidth={columnWidthGetter}
-                    height={autoSizerHeight}
+                    height={autoSizerHeight - headerHeight}
                     width={autoSizerWidth}
                     rowCount={rowCount ?? data.length}
                     rowHeight={rowHeight!}
                     scrollLeft={scrollLeft}
                     className={classes.gridFocus}
-                    onScroll={params => {
-                      onScroll(params);
-                      headerRef.current?.scrollTo(params.scrollLeft, 0);
-                    }}
+                    onScroll={onScroll}
                   />
-                );
-              }}
-            </AutoSizer>
-          </div>
-        </div>
-      )}
-    </ScrollSync>
+                </>
+              );
+            }}
+          </AutoSizer>
+        )}
+      </ScrollSync>
+    </div>
   );
 };
 
