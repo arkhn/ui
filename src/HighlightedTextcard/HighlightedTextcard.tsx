@@ -1,7 +1,12 @@
 import React from "react";
 import clsx from "clsx";
-import { makeStyles, createStyles, Theme, Container } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
+import {
+  makeStyles,
+  createStyles,
+  Theme,
+  Container,
+  Paper
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -26,7 +31,6 @@ const useStyles = makeStyles((theme: Theme) =>
         color: theme.palette.warning.contrastText
       }
     },
-
     key: {
       backgroundColor: theme.palette.secondary.dark,
       color: theme.palette.secondary.contrastText
@@ -49,7 +53,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     scrollContainer: {
       overflowY: "auto",
-      height: "100%"
+      maxHeight: "100%",
+      flex: 1,
+      marginBottom: theme.spacing(1)
     },
     spanHover: {
       "&:hover": {
@@ -125,7 +131,7 @@ export interface Position {
 
 export type HighlightedTextcardData = {
   /**
-   * [value, [keyStartPos, keyEndPos], [valueStartPos, valueEndPos]]
+   * [[keyStartPos, keyEndPos], [valueStartPos, valueEndPos]]
    */
   [key: string]: [[number, number] | null, [number, number] | null][];
 };

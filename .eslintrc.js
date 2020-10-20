@@ -1,13 +1,14 @@
 module.exports = {
+  extends: ["eslint:recommended", "plugin:react/recommended"],
   parserOptions: {
     ecmaVersion: 7,
-    sourceType: "module",
+    sourceType: "module"
   },
   parser: "@typescript-eslint/parser",
   env: {
     node: true,
     jest: true,
-    es6: true,
+    es6: true
   },
   plugins: ["@typescript-eslint", "prettier"],
   ignorePatterns: [],
@@ -20,14 +21,14 @@ module.exports = {
     "no-param-reassign": [
       2,
       {
-        props: false,
-      },
+        props: false
+      }
     ],
     "prettier/prettier": [
       "error",
       {
-        singleQuote: false,
-      },
+        singleQuote: false
+      }
     ],
 
     /**
@@ -40,14 +41,14 @@ module.exports = {
     "no-new": 0,
     "no-shadow": 0,
     "no-case-declarations": 0,
-    camelcase: 0,
+    camelcase: 0
   },
   overrides: [
     {
       files: "*.test.ts",
       rules: {
-        "no-unused-expressions": "off",
-      },
-    },
-  ],
+        "no-unused-expressions": "off"
+      }
+    }
+  ]
 };
