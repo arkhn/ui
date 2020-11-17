@@ -1,7 +1,6 @@
 import React from "react";
 import HighlightedTextcard, {
-  HighlightedTextcardProps,
-  Interval
+  HighlightedTextcardProps
 } from "./HighlightedTextcard";
 
 import { action } from "@storybook/addon-actions";
