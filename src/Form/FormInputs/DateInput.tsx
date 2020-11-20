@@ -2,7 +2,8 @@ import React from "react";
 import { FormControl } from "@material-ui/core";
 import {
   MuiPickersUtilsProvider,
-  KeyboardDateTimePicker
+  KeyboardDateTimePicker,
+  KeyboardDateTimePickerProps
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import { UnpackNestedValue, DeepPartial } from "react-hook-form";
@@ -12,43 +13,38 @@ type DateInputProps<
   T = UnpackNestedValue<DeepPartial<K>>
 > = {
   name: keyof T;
-  label?: string;
-  inputRef?: (ref: any) => void;
   value?: Date | null;
-  onChange: (date: Date | null) => void;
-  error?: boolean;
-  helperText?: string;
-  containerStyle?: React.CSSProperties;
-};
+} & KeyboardDateTimePickerProps;
 
-const DateInput = <K extends Record<string, any>>({
-  name,
-  containerStyle,
-  value,
-  inputRef,
-  ...props
-}: DateInputProps<K>) => {
-  return (
-    <FormControl style={containerStyle}>
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <KeyboardDateTimePicker
-          disableFuture
-          ref={inputRef}
-          fullWidth
-          ampm={false}
-          variant="inline"
-          format="dd/MM/yyyy HH:mm"
-          margin="normal"
-          id={`${name}-date-picker`}
-          KeyboardButtonProps={{
-            "aria-label": "change date"
-          }}
-          value={value ?? null}
-          {...props}
-        />
-      </MuiPickersUtilsProvider>
-    </FormControl>
-  );
-};
+const DateInput = React.forwardRef(
+  <K extends Record<string, any>>(
+    { name, value, ...props }: DateInputProps<K>,
+    ref?: React.Ref<HTMLInputElement>
+  ) => {
+    return (
+      <FormControl style={{ width: "100%" }}>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <KeyboardDateTimePicker
+            disableFuture
+            InputProps={{ inputRef: ref }}
+            fullWidth
+            ampm={false}
+            variant="inline"
+            format="dd/MM/yyyy HH:mm"
+            margin="normal"
+            id={`${name}-date-picker`}
+            KeyboardButtonProps={{
+              "aria-label": "change date"
+            }}
+            value={value ?? null}
+            {...props}
+          />
+        </MuiPickersUtilsProvider>
+      </FormControl>
+    );
+  }
+);
+
+DateInput.displayName = "DateInput";
 
 export default DateInput;
