@@ -1,1 +1,1 @@
-export { default as FormBuilder, FormProps } from "./Form";
+export { FormProps, default as FormBuilder } from "./Form";
