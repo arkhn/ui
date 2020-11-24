@@ -120,7 +120,6 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
   };
   const cellRenderer: GridCellRenderer = ({
     isScrolling,
-    isVisible,
     key,
     style,
     columnIndex
@@ -135,12 +134,7 @@ const VirtualizedCarousel: React.FC<VirtualizedCarouselProps> = ({
       </div>
     );
   };
-  const onScroll = ({
-    clientWidth,
-    scrollLeft,
-    scrollWidth,
-    ...scrollParams
-  }: ScrollParams) => {
+  const onScroll = ({ clientWidth, scrollLeft }: ScrollParams) => {
     let pageNumber = 0;
     if (clientWidth !== 0) {
       pageNumber = Math.round(scrollLeft / clientWidth);

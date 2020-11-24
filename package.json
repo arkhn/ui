@@ -6,11 +6,16 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
+    "@date-io/date-fns": "1.x",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "^4.0.0-alpha.56",
+    "@material-ui/pickers": "^3.2.10",
+    "date-fns": "^2.16.1",
     "material-ui-popup-state": "^1.6.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-draggable": "^4.4.3",
+    "react-hook-form": "^6.11.3",
     "react-modal": "^3.11.2",
     "react-virtualized": "^9.22.1"
   },

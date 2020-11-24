@@ -3,7 +3,6 @@ import ComponentOverlayer, {
   ComponentOverlayerProps
 } from "./ComponentOverlayer";
 import { Meta, Story } from "@storybook/react/types-6-0";
-import { action } from "@storybook/addon-actions";
 
 export default {
   title: "ComponentOverlayer",
