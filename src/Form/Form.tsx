@@ -20,15 +20,61 @@ import SliderInput from "./FormInputs/SliderInput";
 import RadioInput from "./FormInputs/RadioInput";
 
 export interface FormProps<T extends FieldValues = FieldValues> {
+  /**
+   * Called when submitted and validation rules are valid
+   */
   submit: (data: T) => void;
+  /**
+   * Form title. If a formHeader is supplied, 'title' won't be used.
+   */
   title?: string;
+  /**
+   * Default values for the form submitted data.
+   */
   defaultValues?: UnpackNestedValue<DeepPartial<T>>;
+  /**
+   * Array of properties describing the form inputs.
+   */
   properties: FormInputProperty<T>[];
-  formHeader?: JSX.Element;
-  formFooter?: JSX.Element;
+  /**
+   * Form header. It replaces 'title' when supplied.
+   */
+  formHeader?: React.ReactNode;
+  /**
+   * Form footer to be displayed instead of default submit button.
+   *
+   * This component has to render a 'button' HTML tag with 'type' attribute value set to "submit"
+   */
+  formFooter?: React.ReactNode;
+  /**
+   * Style applied to 'form' HTML tag element.
+   * 
+   * Default value :
+      {
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        height: "100%"
+      }
+   */
   formStyle?: React.CSSProperties;
+  /**
+   * Style applied to the 'form' sub div element, containing the form title and its content.
+   * 
+   * Default value :
+      {
+        flex: 1,
+        overflow: "auto"
+      }
+   */
   formContentContainerStyle?: React.CSSProperties;
+  /**
+   * Facultative attribute 'id' of the 'form' HTML tag.
+   */
   formId?: string;
+  /**
+   * True to remove default submit button.
+   */
   displaySubmitButton?: boolean;
 }
 
@@ -121,7 +167,7 @@ const FormSection = <
     <div style={containerStyle}>
       {title && <Typography variant={"h6"}>{title}</Typography>}
       {properties.map(property => {
-        let input: JSX.Element | null = null;
+        let input: React.ReactNode = null;
         switch (property.type) {
           case "number":
           case "text": {

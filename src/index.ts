@@ -34,4 +34,4 @@ export {
   default as ComponentOverlayer,
   ComponentOverlayerProps
 } from "./ComponentOverlayer/ComponentOverlayer";
-export { default as FormBuilder, FormProps } from "./Form/Form";
+export { FormBuilder, FormProps } from "./Form";

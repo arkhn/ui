@@ -6,6 +6,7 @@
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.stories.*",
-    "**/stories"
+    "**/stories",
+    "**/Cohort"
   ]
 }
