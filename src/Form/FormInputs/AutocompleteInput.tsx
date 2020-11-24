@@ -56,7 +56,7 @@ const AutocompleteInput = <T extends FieldValues>({
   }, [loading, getSelectOptions]);
 
   useEffect(() => {
-    if (!open) setOptions([]);
+    if (!open && getSelectOptions) setOptions([]);
   }, [open]);
 
   return (
