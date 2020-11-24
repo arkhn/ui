@@ -6,23 +6,28 @@ import {
   KeyboardDateTimePickerProps
 } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import { UnpackNestedValue, DeepPartial } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 
-type DateInputProps<
-  K extends Record<string, any>,
-  T = UnpackNestedValue<DeepPartial<K>>
-> = {
-  name: keyof T;
+type DateInputProps<K extends FieldValues> = {
+  name: keyof K;
   value?: Date | null;
+  containerStyle?: React.CSSProperties;
 } & KeyboardDateTimePickerProps;
 
 const DateInput = React.forwardRef(
-  <K extends Record<string, any>>(
-    { name, value, ...props }: DateInputProps<K>,
+  <K extends FieldValues>(
+    {
+      name,
+      value,
+      containerStyle = {
+        margin: "1em"
+      },
+      ...props
+    }: DateInputProps<K>,
     ref?: React.Ref<HTMLInputElement>
   ) => {
     return (
-      <FormControl style={{ width: "100%" }}>
+      <FormControl style={containerStyle}>
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
           <KeyboardDateTimePicker
             disableFuture

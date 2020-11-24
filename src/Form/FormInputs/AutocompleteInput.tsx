@@ -16,6 +16,8 @@ type AutocompleteInputProps<
   helperText?: string;
   options: OptionType<T[K]>[];
   getSelectOptions?: () => Promise<OptionType<T[K]>[]>;
+  variant?: "standard" | "outlined" | "filled";
+  containerStyle?: React.CSSProperties;
 };
 
 const AutocompleteInput = <T extends FieldValues>({
@@ -26,7 +28,11 @@ const AutocompleteInput = <T extends FieldValues>({
   onChange,
   name,
   error,
-  helperText
+  helperText,
+  containerStyle = {
+    margin: "1em"
+  },
+  variant
 }: AutocompleteInputProps<T>) => {
   const [open, setOpen] = useState(false);
   const [stateOptions, setOptions] = useState<typeof defaultValue[]>(options);
@@ -54,7 +60,7 @@ const AutocompleteInput = <T extends FieldValues>({
   }, [open]);
 
   return (
-    <FormControl style={{ width: "100%" }} component="div">
+    <FormControl style={containerStyle} component="div">
       <Autocomplete<typeof defaultValue>
         open={open}
         onOpen={() => setOpen(true)}
@@ -76,6 +82,7 @@ const AutocompleteInput = <T extends FieldValues>({
             inputProps={{ ...params.inputProps }}
             error={error}
             helperText={helperText}
+            variant={variant}
             InputProps={{
               ...params.InputProps,
               endAdornment: (

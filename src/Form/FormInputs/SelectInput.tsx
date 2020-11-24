@@ -7,27 +7,28 @@ import {
   InputLabel,
   FormHelperText
 } from "@material-ui/core";
-import { UnpackNestedValue, DeepPartial } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 import { OptionType } from "../InputTypes";
 
-type SelectInputProps<
-  K extends Record<string, any>,
-  T = UnpackNestedValue<DeepPartial<K>>
-> = {
+type SelectInputProps<K extends FieldValues> = {
   title?: string;
   error?: boolean;
   helperText?: string;
   options: OptionType<K>[];
   onChange: (value: OptionType<K> | OptionType<K>[] | null) => void;
+  containerStyle?: React.CSSProperties;
 } & SelectProps;
 
-const SelectInput = <K extends Record<string, any>>({
+const SelectInput = <K extends FieldValues>({
   title,
   options,
   error,
   helperText,
   multiple,
   onChange,
+  containerStyle = {
+    margin: "1em"
+  },
   ...selectProps
 }: SelectInputProps<K>) => {
   const _onChange = (
@@ -48,10 +49,13 @@ const SelectInput = <K extends Record<string, any>>({
   };
 
   return (
-    <FormControl style={{ width: "100%" }}>
-      <InputLabel error={error}>{title}</InputLabel>
+    <FormControl style={containerStyle}>
+      <InputLabel id={selectProps.name} error={error}>
+        {title}
+      </InputLabel>
       <Select
         {...selectProps}
+        labelId={selectProps.name}
         multiple={multiple}
         error={error}
         fullWidth

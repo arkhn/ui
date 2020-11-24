@@ -1,31 +1,33 @@
 import React from "react";
 import { FormControl, TextField, TextFieldProps } from "@material-ui/core";
-import { UnpackNestedValue, DeepPartial } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 
-type TextInputProps<
-  K extends Record<string, any>,
-  T = UnpackNestedValue<DeepPartial<K>>
-> = {
+type TextInputProps<K extends FieldValues> = {
   title?: string;
   inputRef?: (ref: any) => void;
-  name?: keyof T;
+  name?: keyof K;
   error?: boolean;
   helperText?: string;
   type?: "text" | "number";
+  containerStyle?: React.CSSProperties;
 } & TextFieldProps;
 
-const TextInput = <K extends Record<string, any>>({
+const TextInput = <K extends FieldValues>({
   title,
   helperText,
   error,
+  containerStyle = {
+    margin: "1em"
+  },
   ...inputProps
 }: TextInputProps<K>) => {
   return (
-    <FormControl style={{ width: "100%" }} component="div">
+    <FormControl component="div" style={containerStyle}>
       <TextField
         label={title}
         error={error}
         helperText={helperText}
+        fullWidth
         {...inputProps}
       />
     </FormControl>

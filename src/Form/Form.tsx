@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, PropsWithChildren } from "react";
 import {
   useForm,
   Controller,
@@ -11,21 +11,26 @@ import {
   FieldError
 } from "react-hook-form";
 import TextInput from "./FormInputs/TextInput";
-import { Grid, Button, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import SelectInput from "./FormInputs/SelectInput";
 import DateInput from "./FormInputs/DateInput";
 import { FormInputProperty } from "./InputTypes";
 import AutocompleteInput from "./FormInputs/AutocompleteInput";
 import SliderInput from "./FormInputs/SliderInput";
+import RadioInput from "./FormInputs/RadioInput";
 
-export type FormProps<T extends FieldValues> = {
+export interface FormProps<T extends FieldValues = FieldValues> {
   submit: (data: T) => void;
   title?: string;
   defaultValues?: UnpackNestedValue<DeepPartial<T>>;
   properties: FormInputProperty<T>[];
   formHeader?: JSX.Element;
   formFooter?: JSX.Element;
-};
+  formStyle?: React.CSSProperties;
+  formContentContainerStyle?: React.CSSProperties;
+  formId?: string;
+  displaySubmitButton?: boolean;
+}
 
 const Form = <T extends FieldValues = FieldValues>({
   defaultValues,
@@ -33,8 +38,20 @@ const Form = <T extends FieldValues = FieldValues>({
   properties,
   submit,
   formHeader,
-  formFooter
-}: FormProps<T>) => {
+  formFooter,
+  formId,
+  displaySubmitButton,
+  formContentContainerStyle = {
+    flex: 1,
+    overflow: "auto"
+  },
+  formStyle = {
+    display: "flex",
+    flexDirection: "column",
+    flex: 1,
+    height: "100%"
+  }
+}: PropsWithChildren<FormProps<T>>) => {
   const { handleSubmit, register, errors, control, setValue } = useForm<T>({
     defaultValues
   });
@@ -53,31 +70,20 @@ const Form = <T extends FieldValues = FieldValues>({
   }, [register, properties]);
 
   return (
-    <form
-      onSubmit={handleSubmit(submit)}
-      style={{ display: "flex", flexDirection: "column" }}
-    >
-      <Grid container spacing={2} direction="column">
-        {formHeader ? <Grid item>{formHeader}</Grid> : null}
-        <Grid item>
-          <FormSection<T, typeof register, typeof setValue>
-            control={control}
-            defaultValues={defaultValues}
-            errors={errors}
-            properties={properties}
-            register={register}
-            setValue={setValue}
-            title={!formHeader ? title : undefined}
-          />
-        </Grid>
-        {formFooter ? (
-          <Grid item>{formFooter}</Grid>
-        ) : (
-          <Grid item>
-            <Button type="submit">Submit</Button>
-          </Grid>
-        )}
-      </Grid>
+    <form onSubmit={handleSubmit(submit)} style={formStyle} id={formId}>
+      <div style={formContentContainerStyle}>
+        {formHeader}
+        <FormSection<T, typeof register, typeof setValue>
+          control={control}
+          defaultValues={defaultValues}
+          errors={errors}
+          properties={properties}
+          register={register}
+          setValue={setValue}
+          title={!formHeader ? title : undefined}
+        />
+      </div>
+      {displaySubmitButton ? <Button type="submit">Submit</Button> : formFooter}
     </form>
   );
 };
@@ -89,7 +95,7 @@ type RenderSectionProps<T extends FieldValues, R, S> = {
   control: Control<T>;
   setValue: S;
   defaultValues?: UnpackNestedValue<DeepPartial<T>>;
-  gridContainerProps?: React.ComponentProps<typeof Grid>;
+  containerStyle?: React.CSSProperties;
   title?: string;
 };
 const FormSection = <
@@ -104,21 +110,16 @@ const FormSection = <
   defaultValues,
   setValue,
   title,
-  gridContainerProps
+  containerStyle = {
+    padding: "1em",
+    display: "flex",
+    flex: 1,
+    flexDirection: "column"
+  }
 }: RenderSectionProps<T, R, S>) => {
   return (
-    <Grid
-      container
-      spacing={2}
-      direction="column"
-      {...gridContainerProps}
-      style={{ width: "100%", ...gridContainerProps?.style }}
-    >
-      {title && (
-        <Grid item style={{ width: "100%" }}>
-          <Typography variant={"h5"}>{title}</Typography>
-        </Grid>
-      )}
+    <div style={containerStyle}>
+      {title && <Typography variant={"h6"}>{title}</Typography>}
       {properties.map(property => {
         let input: JSX.Element | null = null;
         switch (property.type) {
@@ -128,7 +129,7 @@ const FormSection = <
               <TextInput
                 title={property.label}
                 name={property.name}
-                // containerStyle={property.containerStyle}
+                containerStyle={property.containerStyle}
                 inputRef={register(property.validationRules)}
                 placeholder={property.placeholder}
                 error={undefined !== errors[property.name]}
@@ -151,11 +152,12 @@ const FormSection = <
                 control={control}
                 rules={property.validationRules}
                 defaultValue={property.defaultValue}
-                render={({ onChange, value, ref }) => (
+                render={({ onChange, value, ref, name }) => (
                   <SelectInput
-                    // containerStyle={property.containerStyle}
+                    containerStyle={property.containerStyle}
                     title={property.label}
                     inputRef={ref}
+                    name={name}
                     variant={property.variant}
                     value={
                       property.type === "multiSelect"
@@ -190,7 +192,7 @@ const FormSection = <
                     {...props}
                     ref={ref}
                     label={property.label}
-                    // containerStyle={property.containerStyle}
+                    containerStyle={property.containerStyle}
                     error={undefined !== errors[property.name]}
                     helperText={
                       //@ts-ignore
@@ -211,13 +213,14 @@ const FormSection = <
                 options={property.autocompleteOptions}
                 //@ts-ignore
                 getSelectOptions={property.getAutocompleteOptions}
+                variant={property.variant}
                 defaultValue={defaultValues?.[property.name]}
                 onChange={value =>
                   setValue(property.name as FieldName<T>, value, {
                     shouldValidate: true
                   })
                 }
-                // containerStyle={property.containerStyle}
+                containerStyle={property.containerStyle}
                 name={property.name as FieldName<T>}
                 title={property.label}
                 error={undefined !== errors[property.name]}
@@ -245,7 +248,7 @@ const FormSection = <
                     min={property.min}
                     valueLabelDisplay={property.valueLabelDisplay}
                     defaultValue={property.defaultValue}
-                    // containerStyle={property.containerStyle}
+                    containerStyle={property.containerStyle}
                     error={undefined !== errors[property.name]}
                     helperText={
                       //@ts-ignore
@@ -253,6 +256,45 @@ const FormSection = <
                     }
                   />
                 )}
+              />
+            );
+            break;
+          }
+
+          case "radio": {
+            input = (
+              <Controller
+                name={property.name as FieldName<T>}
+                control={control}
+                rules={property.validationRules}
+                defaultValue={property.defaultValue}
+                render={({ onChange, value }) => (
+                  <RadioInput
+                    containerStyle={property.containerStyle}
+                    title={property.label}
+                    value={value}
+                    onChange={onChange}
+                    error={undefined !== errors[property.name]}
+                    helperText={
+                      //@ts-ignore
+                      errors[property.name] && errors[property.name].message
+                    }
+                    options={property.radioOptions}
+                  />
+                )}
+              />
+            );
+            break;
+          }
+
+          case "custom": {
+            input = (
+              <Controller
+                control={control}
+                name={property.name as FieldName<T>}
+                rules={property.validationRules}
+                render={property.renderInput}
+                defaultValue={defaultValues?.[property.name]}
               />
             );
             break;
@@ -268,7 +310,7 @@ const FormSection = <
                 register={register}
                 setValue={setValue}
                 title={property.title}
-                gridContainerProps={property.gridContainerProps}
+                containerStyle={property.containerStyle}
               />
             );
             break;
@@ -278,22 +320,9 @@ const FormSection = <
             break;
         }
 
-        return property.type === "section" ? (
-          <Grid item key={property.name} style={{ width: "100%" }}>
-            {input}
-          </Grid>
-        ) : (
-          <Grid
-            item
-            key={property.name}
-            {...property.gridContainerProps}
-            style={{ width: "100%", ...property.gridContainerProps?.style }}
-          >
-            {input}
-          </Grid>
-        );
+        return <React.Fragment key={property.name}>{input}</React.Fragment>;
       })}
-    </Grid>
+    </div>
   );
 };
 

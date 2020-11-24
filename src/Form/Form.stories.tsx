@@ -4,6 +4,7 @@ import Form, { FormProps } from "./Form";
 import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react/types-6-0";
 import { Typography, Button } from "@material-ui/core";
+import CohortCustomInput from "./Cohort/CohortCustomInput";
 
 export default {
   title: "Form",
@@ -27,8 +28,6 @@ const Template: Story<FormProps<FormData>> = args => (
   <Form<FormData> {...args} />
 );
 
-export const Default = Template.bind({});
-
 const getCountries = async () => {
   const response = await fetch(
     "https://country.register.gov.uk/records.json?page-size=5000"
@@ -44,7 +43,11 @@ const submit = (data: any) => {
   action(data)(data);
 };
 
+export const Default = Template.bind({});
+
 Default.args = {
+  formStyle: undefined,
+  formContentContainerStyle: undefined,
   defaultValues: {
     firstName: "Henri",
     lastName: "Dupont",
@@ -59,12 +62,7 @@ Default.args = {
     ageRange: [35, 40]
   },
   formHeader: <Typography variant="h3">Form Header</Typography>,
-  formFooter: (
-    <>
-      <Button>Cancel</Button>
-      <Button type="submit">Submit</Button>
-    </>
-  ),
+  displaySubmitButton: true,
   title: "Form example",
   properties: [
     {
@@ -76,6 +74,7 @@ Default.args = {
           name: "firstName",
           label: "First Name",
           placeholder: "Type here",
+          variant: "outlined",
           type: "text",
           validationRules: {
             required: "This field is required",
@@ -94,7 +93,7 @@ Default.args = {
           label: "Address",
           placeholder: "Type Here",
           type: "text",
-          variant: "filled"
+          variant: "outlined"
         },
         {
           type: "section",
@@ -105,6 +104,7 @@ Default.args = {
               name: "country",
               label: "Country",
               type: "autocomplete",
+              variant: "outlined",
               validationRules: {
                 required: "This field is required"
               },
@@ -116,6 +116,7 @@ Default.args = {
             {
               name: "colors",
               label: "Prefered colors",
+              variant: "outlined",
               selectOptions: [
                 {
                   id: "1",
@@ -159,6 +160,7 @@ Default.args = {
           name: "age",
           label: "Age",
           placeholder: "Type Here",
+          variant: "outlined",
           type: "number",
           validationRules: {
             min: { value: 1, message: "No negative or null number" },
@@ -172,7 +174,7 @@ Default.args = {
           name: "sexe",
           label: "Sexe",
           type: "select",
-          variant: "filled",
+          variant: "outlined",
           defaultValue: "male",
           selectOptions: [
             { id: "1", label: "male" },
@@ -211,3 +213,85 @@ Default.args = {
   ],
   submit
 };
+
+export const CohortExample = () => (
+  <div
+    style={{
+      width: 500,
+      height: 700,
+      border: "1px solid grey",
+      boxSizing: "border-box"
+    }}
+  >
+    <Form
+      submit={submit}
+      formContentContainerStyle={{ paddingTop: 0, flex: 1, overflow: "auto" }}
+      formFooter={
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "2em",
+            backgroundColor: "#F5F8FA",
+            borderTop: "1px solid #CCCCCD"
+          }}
+        >
+          <Button
+            style={{
+              padding: "1em",
+              backgroundColor: "#F7F7F7",
+              color: "#707070",
+              border: "1px solid #D7DAE3",
+              textTransform: "none",
+              fontWeight: "bold"
+            }}
+          >
+            Annuler
+          </Button>
+          <Button
+            style={{
+              padding: "1em",
+              backgroundColor: "#327EAA",
+              color: "white",
+              border: "1px solid #D7DAE3",
+              textTransform: "none"
+            }}
+            type="submit"
+          >
+            Ajouter le critère
+          </Button>
+        </div>
+      }
+      formHeader={
+        <div style={{ paddingTop: "1em", paddingLeft: "1em" }}>
+          <Typography variant="subtitle1">Démographie patient</Typography>
+        </div>
+      }
+      properties={[
+        {
+          type: "text",
+          name: "criteriaName",
+          label: "Nom du critère",
+          variant: "outlined"
+        },
+        {
+          type: "radio",
+          name: "sexe",
+          label: "Genre",
+          radioOptions: [
+            { id: "1", label: "Homme" },
+            { id: "2", label: "Femme" },
+            { id: "3", label: "Autre" },
+            { id: "4", label: "Tous" }
+          ]
+        },
+        {
+          type: "custom",
+          name: "ageRange",
+          renderInput: inputProps => <CohortCustomInput {...inputProps} />
+        }
+      ]}
+    />
+  </div>
+);

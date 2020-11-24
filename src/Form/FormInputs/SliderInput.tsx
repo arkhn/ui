@@ -17,6 +17,7 @@ type SliderProps<T extends number | [number, number]> = {
   helperText?: string;
   defaultValue?: T;
   valueLabelDisplay?: "on" | "off" | "auto";
+  containerStyle?: React.CSSProperties;
 };
 
 const SliderInput = <T extends number | [number, number]>({
@@ -28,7 +29,10 @@ const SliderInput = <T extends number | [number, number]>({
   error,
   helperText,
   defaultValue,
-  valueLabelDisplay
+  valueLabelDisplay,
+  containerStyle = {
+    margin: "1em"
+  }
 }: SliderProps<T>) => {
   const _onChange = (
     event: React.ChangeEvent<{}>,
@@ -37,7 +41,7 @@ const SliderInput = <T extends number | [number, number]>({
     onChange(value as T);
   };
   return (
-    <FormControl style={{ width: "100%" }}>
+    <FormControl style={containerStyle}>
       <FormLabel error={error}>{title}</FormLabel>
       <Slider
         value={value}
