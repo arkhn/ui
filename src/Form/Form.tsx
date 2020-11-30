@@ -163,6 +163,19 @@ const FormSection = <
     flexDirection: "column"
   }
 }: RenderSectionProps<T, R, S>) => {
+  useEffect(() => {
+    const autocompleteProperties = properties.filter(
+      property => property.type === "autocomplete"
+    );
+
+    if (autocompleteProperties.length > 0) {
+      autocompleteProperties.forEach(property => {
+        property.type !== "section" &&
+          register(property.name as FieldName<T>, property.validationRules);
+      });
+    }
+  }, [register, properties]);
+
   return (
     <div style={containerStyle}>
       {title && <Typography variant={"h6"}>{title}</Typography>}
@@ -180,11 +193,11 @@ const FormSection = <
                 placeholder={property.placeholder}
                 error={undefined !== errors[property.name]}
                 variant={property.variant}
+                password={property.password}
                 helperText={
                   //@ts-ignore
                   errors[property.name] && errors[property.name].message
                 }
-                type={property.type}
               />
             );
             break;

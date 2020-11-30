@@ -76,6 +76,7 @@ Default.args = {
           placeholder: "Type here",
           variant: "outlined",
           type: "text",
+          password: true,
           validationRules: {
             required: "This field is required",
             maxLength: { value: 10, message: "No more than 10 char" }
