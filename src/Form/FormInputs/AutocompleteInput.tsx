@@ -3,7 +3,6 @@ import { FormControl, CircularProgress, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { FieldName, FieldValues } from "react-hook-form";
 import { OptionType } from "../InputTypes";
-
 type AutocompleteInputProps<
   T extends FieldValues,
   K extends FieldName<T> = FieldName<T>
@@ -15,11 +14,10 @@ type AutocompleteInputProps<
   error?: boolean;
   helperText?: string;
   options: OptionType<T[K]>[];
-  getSelectOptions?: () => Promise<OptionType<T[K]>[]>;
+  getSelectOptions?: (searchValue: string) => Promise<OptionType<T[K]>[]>;
   variant?: "standard" | "outlined" | "filled";
   containerStyle?: React.CSSProperties;
 };
-
 const AutocompleteInput = <T extends FieldValues>({
   title,
   options,
@@ -36,25 +34,22 @@ const AutocompleteInput = <T extends FieldValues>({
 }: AutocompleteInputProps<T>) => {
   const [open, setOpen] = useState(false);
   const [stateOptions, setOptions] = useState<typeof defaultValue[]>(options);
+  const [textValue, onChangeTextValue] = useState<string>("");
+  const [requestBlocking, onRequestBlocking] = useState<boolean>(false);
   const loading = open && stateOptions.length === 0;
 
   useEffect(() => {
     let active = true;
-
-    if (!loading) {
-      return undefined;
-    }
-
+    if (requestBlocking) return undefined;
     getSelectOptions &&
-      getSelectOptions().then(newOptions => {
+      getSelectOptions(textValue).then(newOptions => {
         if (active) setOptions(newOptions);
       });
 
     return () => {
       active = false;
     };
-  }, [loading, getSelectOptions]);
-
+  }, [open, requestBlocking, getSelectOptions, textValue]);
   useEffect(() => {
     if (!open && getSelectOptions) setOptions([]);
   }, [open]);
@@ -72,6 +67,11 @@ const AutocompleteInput = <T extends FieldValues>({
         defaultValue={defaultValue}
         onChange={(event, newValue) => {
           onChange && onChange(newValue ?? null);
+        }}
+        onInputChange={(e, newTextValue, reason) => {
+          onChangeTextValue(newTextValue);
+          onRequestBlocking(true);
+          reason === "input" && setTimeout(() => onRequestBlocking(false), 500);
         }}
         renderInput={params => (
           <TextField

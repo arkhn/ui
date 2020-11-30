@@ -41,6 +41,8 @@ module.exports = {
     "no-self-compare": 0,
     "no-new": 0,
     "no-shadow": 0,
+    "react/prop-types": 0,
+    "react/display-name": 0,
     "no-case-declarations": 0,
     camelcase: 0
   },

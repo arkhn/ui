@@ -43,6 +43,7 @@ export type FormInputProperty<
 type TextInput = {
   type: "number" | "text";
   placeholder?: string;
+  password?: boolean;
 };
 
 type RadioInput<T> = {
@@ -80,5 +81,5 @@ type AutoComplete<T> = {
   type: "autocomplete";
   autocompleteOptions: OptionType<T>[];
   multiple?: boolean;
-  getAutocompleteOptions?: () => Promise<OptionType<T>[]>;
+  getAutocompleteOptions?: (searchValue: string) => Promise<OptionType<T>[]>;
 };
