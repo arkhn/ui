@@ -1,7 +1,8 @@
 export { default as EditInput, EditInputProps } from "./EditInput/EditInput";
 export {
   default as SelectableTable,
-  SelectableTableButton,
+  ToolbarButton,
+  RowButton,
   SelectableTableColumn,
   SelectableTableProps,
   TableDataType

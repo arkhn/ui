@@ -1,7 +1,7 @@
 import React from "react";
 import SelectableTable, {
   TableDataType,
-  SelectableTableProps,
+  SelectableTableProps
 } from "./SelectableTable";
 import { action } from "@storybook/addon-actions";
 import { Meta, Story } from "@storybook/react/types-6-0";
@@ -11,8 +11,8 @@ export default {
   component: SelectableTable,
   argTypes: {
     numberOfRows: { control: { type: "number", min: 0, max: 100, step: 1 } },
-    rows: { contol: "none" },
-  },
+    rows: { contol: "none" }
+  }
 } as Meta;
 
 const createRowData = (numberOfRows: number): TableDataType[] => {
@@ -24,11 +24,14 @@ const createRowData = (numberOfRows: number): TableDataType[] => {
       name: `row ${i + 1}`,
       id: i.toString(),
       documents: [],
-      numberOfDocs: numberOfDocuments,
+      numberOfDocs: numberOfDocuments
     });
   }
 
-  return data;
+  return data.map((item, index, array) => ({
+    ...item,
+    parentId: index > 0 ? array[index - 1].id : null
+  }));
 };
 
 const Template: Story<SelectableTableProps & { numberOfRows: number }> = ({
@@ -39,7 +42,7 @@ const Template: Story<SelectableTableProps & { numberOfRows: number }> = ({
   toolBarDynamicTitle,
   focusedRowId,
   selectedRowIds,
-  rows,
+  rows
 }) => {
   const [stateFocusedRowId, setFocusedRowId] = React.useState<string | null>(
     focusedRowId
@@ -63,6 +66,15 @@ const Template: Story<SelectableTableProps & { numberOfRows: number }> = ({
     setSelectedRowIds(selectedRowIds);
   }, [selectedRowIds]);
 
+  const getRowParentId = (id: string) => {
+    const row = stateRows.find(row => row.id === id);
+    if (!row) {
+      return null;
+    } else {
+      return row.parentId as string | null;
+    }
+  };
+
   return (
     <SelectableTable
       tableTitle={tableTitle}
@@ -71,7 +83,7 @@ const Template: Story<SelectableTableProps & { numberOfRows: number }> = ({
           `Edited attribure: ${attribute} on row with id: ${id} with new value: ${value}`
         )()
       }
-      onRowClick={(id) => {
+      onRowClick={id => {
         setFocusedRowId(id);
         action(`Clicked on row with id: ${id}`)();
       }}
@@ -82,6 +94,15 @@ const Template: Story<SelectableTableProps & { numberOfRows: number }> = ({
       toolBarDynamicTitle={toolBarDynamicTitle}
       buttons={buttons}
       columns={columns}
+      getRowParentId={getRowParentId}
+      rowEndButtons={[
+        {
+          label: "Compute",
+          onClick: console.log,
+          disabled: false,
+          variant: "contained"
+        }
+      ]}
     />
   );
 };
@@ -101,33 +122,33 @@ Default.args = {
       rowAttributeKey: "name",
       align: "left",
       padding: "none",
-      input: true,
+      input: true
     },
     {
       label: "Nombre de documents",
       rowAttributeKey: "numberOfDocs",
       align: "right",
-      padding: "default",
+      padding: "default"
     },
     {
       label: "Id",
       rowAttributeKey: "id",
       align: "right",
-      padding: "default",
-    },
+      padding: "default"
+    }
   ],
   buttons: [
     {
       label: "Button 1",
       onClick: (ids: string[]) =>
         action(`Clicked on button 1 with selected row ids: ${ids}`)(),
-      disabled: false,
+      disabled: false
     },
     {
       label: "Button 2",
       onClick: (ids: string[]) =>
         action(`Clicked on button 2 with selected row ids: ${ids}`)(),
-      disabled: true,
-    },
-  ],
+      disabled: true
+    }
+  ]
 };

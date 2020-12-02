@@ -6,9 +6,10 @@ import Adapter from "enzyme-adapter-react-16";
 import SelectableTable, {
   SelectableTableProps,
   TableToolbar,
-  SelectableTableHead
+  SelectableTableHead,
+  TableRow
 } from "./SelectableTable";
-import { TableRow, TableCell } from "@material-ui/core";
+import { TableCell } from "@material-ui/core";
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -65,7 +66,7 @@ const props: SelectableTableProps = {
     },
     {
       label: "Button 2",
-      onClick: (ids: string[]) => {}
+      onClick: () => {}
     }
   ],
   onChangeSelectedRows: () => {},
@@ -82,12 +83,6 @@ describe("SelectableTable", () => {
 
     const tableRows = wrapper.find(TableRow);
     expect(tableRows).toHaveLength(props.rows.length);
-
-    const tableCells = wrapper.find(TableCell);
-    expect(tableCells).toHaveLength(
-      props.rows.length * props.columns.length +
-        props.columns.length /** for the header cells */
-    );
 
     const selectableTableHead = wrapper.find(SelectableTableHead);
     expect(selectableTableHead).toHaveLength(1);
