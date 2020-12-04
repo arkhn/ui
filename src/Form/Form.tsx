@@ -283,6 +283,7 @@ const FormSection = <
                 name={property.name as FieldName<T>}
                 title={property.label}
                 error={undefined !== errors[property.name]}
+                multiple={property.multiple}
                 helperText={
                   //@ts-ignore
                   errors[property.name] && errors[property.name].message

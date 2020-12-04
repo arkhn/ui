@@ -105,6 +105,7 @@ Default.args = {
               name: "country",
               label: "Country",
               type: "autocomplete",
+              multiple: true,
               variant: "outlined",
               validationRules: {
                 required: "This field is required"

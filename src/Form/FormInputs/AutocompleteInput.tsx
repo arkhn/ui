@@ -17,6 +17,7 @@ type AutocompleteInputProps<
   getSelectOptions?: (searchValue: string) => Promise<OptionType<T[K]>[]>;
   variant?: "standard" | "outlined" | "filled";
   containerStyle?: React.CSSProperties;
+  multiple?: boolean;
 };
 const AutocompleteInput = <T extends FieldValues>({
   title,
@@ -30,7 +31,8 @@ const AutocompleteInput = <T extends FieldValues>({
   containerStyle = {
     margin: "1em"
   },
-  variant
+  variant,
+  multiple
 }: AutocompleteInputProps<T>) => {
   const [open, setOpen] = useState(false);
   const [stateOptions, setOptions] = useState<typeof defaultValue[]>(options);
@@ -65,13 +67,15 @@ const AutocompleteInput = <T extends FieldValues>({
         options={stateOptions}
         loading={loading}
         defaultValue={defaultValue}
+        //@ts-ignore
+        multiple={multiple}
         onChange={(event, newValue) => {
           onChange && onChange(newValue ?? null);
         }}
-        onInputChange={(e, newTextValue, reason) => {
+        onInputChange={(e, newTextValue) => {
           onChangeTextValue(newTextValue);
           onRequestBlocking(true);
-          reason === "input" && setTimeout(() => onRequestBlocking(false), 500);
+          setTimeout(() => onRequestBlocking(false), 500);
         }}
         renderInput={params => (
           <TextField
