@@ -36,7 +36,8 @@ const TextInput = <K extends FieldValues>({
   password,
   containerStyle = {
     margin: "1em"
-  }
+  },
+  ...inputProps
 }: TextInputProps<K>) => {
   const [hideText, setHideText] = useState(password);
 
@@ -55,6 +56,7 @@ const TextInput = <K extends FieldValues>({
             <EyeIcon onClick={() => setHideText(!hideText)} hide={hideText} />
           ) : null
         }}
+        {...inputProps}
       />
     </FormControl>
   );
