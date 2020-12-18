@@ -57,6 +57,7 @@ export type LabelDroppableMenuProps = {
     label: string;
     onClick: (id: string) => void;
     icon: React.ReactNode;
+    disabled?: boolean;
   }[];
   onLabelEdited?: (value: string) => void;
   editIconProps?: React.ComponentProps<typeof EditIcon>;
@@ -162,9 +163,10 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
                   </ListItem>
                   {droppableListItems &&
                     droppableListItems.map(
-                      ({ icon, label, onClick }, index) => (
+                      ({ icon, label, onClick, disabled }, index) => (
                         <ListItem
                           button
+                          disabled={disabled}
                           onClick={() => {
                             popupState.close();
                             onClick(id);

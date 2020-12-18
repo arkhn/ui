@@ -22,6 +22,7 @@ import {
 } from "react-beautiful-dnd";
 import ReactDraggable from "react-draggable";
 import { Checkbox, Tooltip } from "@material-ui/core";
+import { CSSProperties } from "@material-ui/core/styles/withStyles";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -114,6 +115,8 @@ export interface ColumnData {
   numeric?: boolean;
   width: number;
   isDragDisabled?: boolean;
+  checkbox?: boolean;
+  headerStyle?: CSSProperties;
 }
 
 type GridDataKeys = keyof GridDataType;
@@ -286,9 +289,14 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   };
 
   const renderHeaderCell: GridCellRenderer = ({ columnIndex, style }) => {
-    const { dataKey, isDragDisabled, width, ...otherColumnProps } = columns[
-      columnIndex
-    ];
+    const {
+      dataKey,
+      isDragDisabled,
+      width,
+      headerStyle,
+      checkbox = true,
+      ...otherColumnProps
+    } = columns[columnIndex];
     return (
       <Draggable
         draggableId={dataKey}
@@ -305,19 +313,22 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
             ref={provided.innerRef}
             {...provided.draggableProps}
             style={{
+              ...headerStyle,
               ...provided.draggableProps.style,
               ...style
             }}
           >
-            <div>
-              <Checkbox
-                checked={
-                  selectedColumnKeys.findIndex(key => key === dataKey) >= 0
-                }
-                onChange={() => {
-                  handleHeaderCellClick(dataKey);
-                }}
-              />
+            <div style={{ width: 42 }}>
+              {checkbox && (
+                <Checkbox
+                  checked={
+                    selectedColumnKeys.findIndex(key => key === dataKey) >= 0
+                  }
+                  onChange={() => {
+                    handleHeaderCellClick(dataKey);
+                  }}
+                />
+              )}
             </div>
             {headerCellRenderer(
               {
