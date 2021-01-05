@@ -50,7 +50,7 @@ const TextInput = <K extends FieldValues>({
         placeholder={placeholder}
         variant={variant}
         fullWidth
-        inputProps={{ type: hideText ? "password" : "text" }}
+        inputProps={{ type: hideText ? "password" : inputProps.type }}
         InputProps={{
           endAdornment: password ? (
             <EyeIcon onClick={() => setHideText(!hideText)} hide={hideText} />

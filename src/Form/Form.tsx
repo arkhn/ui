@@ -194,6 +194,7 @@ const FormSection = <
                 error={undefined !== errors[property.name]}
                 variant={property.variant}
                 password={property.password}
+                type={property.type}
                 helperText={
                   //@ts-ignore
                   errors[property.name] && errors[property.name].message
