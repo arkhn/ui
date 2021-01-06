@@ -14,6 +14,8 @@ type TextInputProps<K extends FieldValues> = {
   placeholder?: string;
   variant?: "filled" | "outlined" | "standard";
   password?: boolean;
+  disabled?: boolean;
+  endAdornment?: JSX.Element;
 };
 
 const EyeIcon: React.FC<{ hide?: boolean; onClick?: () => void }> = ({
@@ -34,6 +36,7 @@ const TextInput = <K extends FieldValues>({
   placeholder,
   variant,
   password,
+  endAdornment,
   containerStyle = {
     margin: "1em"
   },
@@ -50,11 +53,15 @@ const TextInput = <K extends FieldValues>({
         placeholder={placeholder}
         variant={variant}
         fullWidth
-        inputProps={{ type: hideText ? "password" : inputProps.type }}
+        inputProps={{
+          type: hideText ? "password" : inputProps.type
+        }}
         InputProps={{
-          endAdornment: password ? (
-            <EyeIcon onClick={() => setHideText(!hideText)} hide={hideText} />
-          ) : null
+          endAdornment:
+            endAdornment ??
+            (password ? (
+              <EyeIcon onClick={() => setHideText(!hideText)} hide={hideText} />
+            ) : null)
         }}
         {...inputProps}
       />

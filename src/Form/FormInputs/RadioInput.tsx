@@ -19,6 +19,7 @@ type RadioInputProps<K extends FieldValues> = {
   containerStyle?: React.CSSProperties;
   name?: keyof K;
   value: OptionType<K> | null;
+  disabled?: boolean;
 };
 
 const RadioInput = <K extends FieldValues>({
@@ -31,7 +32,8 @@ const RadioInput = <K extends FieldValues>({
   options,
   helperText,
   name,
-  value
+  value,
+  disabled
 }: RadioInputProps<K>) => {
   const _onChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -55,6 +57,7 @@ const RadioInput = <K extends FieldValues>({
           <FormControlLabel
             key={option.id}
             value={option.id}
+            disabled={disabled}
             control={<Radio />}
             label={option.label}
           />

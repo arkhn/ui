@@ -18,6 +18,7 @@ type AutocompleteInputProps<
   variant?: "standard" | "outlined" | "filled";
   containerStyle?: React.CSSProperties;
   multiple?: boolean;
+  disabled?: boolean;
 };
 const AutocompleteInput = <T extends FieldValues>({
   title,
@@ -32,7 +33,8 @@ const AutocompleteInput = <T extends FieldValues>({
     margin: "1em"
   },
   variant,
-  multiple
+  multiple,
+  disabled
 }: AutocompleteInputProps<T>) => {
   const [open, setOpen] = useState(false);
   const [stateOptions, setOptions] = useState<typeof defaultValue[]>(options);
@@ -67,6 +69,7 @@ const AutocompleteInput = <T extends FieldValues>({
         options={stateOptions}
         loading={loading}
         defaultValue={defaultValue}
+        disabled={disabled}
         //@ts-ignore
         multiple={multiple}
         onChange={(event, newValue) => {

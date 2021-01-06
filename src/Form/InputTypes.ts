@@ -38,12 +38,14 @@ export type FormInputProperty<
       | MultiSelectInput<T[K]>
       | SliderInput<T[K]>
       | RadioInput<T[K]>
+      | SwitchInput
     ));
 
 type TextInput = {
   type: "number" | "text";
   placeholder?: string;
   password?: boolean;
+  endAdornment?: JSX.Element;
 };
 
 type RadioInput<T> = {
@@ -75,11 +77,21 @@ type DateInput = {
   type: "date";
 };
 
-export type OptionType<T> = T & { id: string; label: string };
+export type OptionType<T extends Record<string, any>> = T & {
+  id: string;
+  label: string;
+};
 
 type AutoComplete<T> = {
   type: "autocomplete";
   autocompleteOptions: OptionType<T>[];
   multiple?: boolean;
   getAutocompleteOptions?: (searchValue: string) => Promise<OptionType<T>[]>;
+};
+
+type SwitchInput = {
+  type: "switch";
+  defaultValue?: boolean;
+  falseLabel?: string;
+  trueLabel?: string;
 };

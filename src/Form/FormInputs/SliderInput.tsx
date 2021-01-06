@@ -18,6 +18,7 @@ type SliderProps<T extends number | [number, number]> = {
   defaultValue?: T;
   valueLabelDisplay?: "on" | "off" | "auto";
   containerStyle?: React.CSSProperties;
+  disabled?: boolean;
 };
 
 const SliderInput = <T extends number | [number, number]>({
@@ -30,6 +31,7 @@ const SliderInput = <T extends number | [number, number]>({
   helperText,
   defaultValue,
   valueLabelDisplay,
+  disabled,
   containerStyle = {
     margin: "1em"
   }
@@ -47,6 +49,7 @@ const SliderInput = <T extends number | [number, number]>({
         value={value}
         onChange={_onChange}
         valueLabelDisplay={valueLabelDisplay}
+        disabled={disabled}
         max={max}
         min={min}
         defaultValue={

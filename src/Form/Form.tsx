@@ -18,6 +18,7 @@ import { FormInputProperty } from "./InputTypes";
 import AutocompleteInput from "./FormInputs/AutocompleteInput";
 import SliderInput from "./FormInputs/SliderInput";
 import RadioInput from "./FormInputs/RadioInput";
+import SwitchInput from "./FormInputs/SwitchInput";
 
 export interface FormProps<T extends FieldValues = FieldValues> {
   /**
@@ -35,7 +36,7 @@ export interface FormProps<T extends FieldValues = FieldValues> {
   /**
    * Array of properties describing the form inputs.
    */
-  properties: FormInputProperty<T>[];
+  properties: FormInputProperty<T>[] | ((data: T) => FormInputProperty<T>[]);
   /**
    * Form header. It replaces 'title' when supplied.
    */
@@ -98,12 +99,16 @@ const Form = <T extends FieldValues = FieldValues>({
     height: "100%"
   }
 }: PropsWithChildren<FormProps<T>>) => {
-  const { handleSubmit, register, errors, control, setValue } = useForm<T>({
+  const { handleSubmit, register, errors, control, setValue, watch } = useForm<
+    T
+  >({
     defaultValues
   });
+  const _properties =
+    typeof properties === "function" ? properties(watch()) : properties;
 
   useEffect(() => {
-    const autocompleteProperties = properties.filter(
+    const autocompleteProperties = _properties.filter(
       property => property.type === "autocomplete"
     );
 
@@ -113,17 +118,22 @@ const Form = <T extends FieldValues = FieldValues>({
           register(property.name as FieldName<T>, property.validationRules);
       });
     }
-  }, [register, properties]);
+  }, [register, _properties]);
 
   return (
-    <form onSubmit={handleSubmit(submit)} style={formStyle} id={formId}>
+    <form
+      onSubmit={handleSubmit(submit)}
+      style={formStyle}
+      id={formId}
+      noValidate
+    >
       <div style={formContentContainerStyle}>
         {formHeader}
         <FormSection<T, typeof register, typeof setValue>
           control={control}
           defaultValues={defaultValues}
           errors={errors}
-          properties={properties}
+          properties={_properties}
           register={register}
           setValue={setValue}
           title={!formHeader ? title : undefined}
@@ -195,6 +205,8 @@ const FormSection = <
                 variant={property.variant}
                 password={property.password}
                 type={property.type}
+                disabled={property.disabled}
+                endAdornment={property.endAdornment}
                 helperText={
                   //@ts-ignore
                   errors[property.name] && errors[property.name].message
@@ -215,6 +227,7 @@ const FormSection = <
                 render={({ onChange, value, ref, name }) => (
                   <SelectInput
                     containerStyle={property.containerStyle}
+                    disabled={property.disabled}
                     title={property.label}
                     inputRef={ref}
                     name={name}
@@ -250,6 +263,7 @@ const FormSection = <
                 render={({ ref, ...props }) => (
                   <DateInput
                     {...props}
+                    disabled={property.disabled}
                     ref={ref}
                     label={property.label}
                     containerStyle={property.containerStyle}
@@ -275,6 +289,7 @@ const FormSection = <
                 getSelectOptions={property.getAutocompleteOptions}
                 variant={property.variant}
                 defaultValue={defaultValues?.[property.name]}
+                disabled={property.disabled}
                 onChange={value =>
                   setValue(property.name as FieldName<T>, value, {
                     shouldValidate: true
@@ -303,6 +318,7 @@ const FormSection = <
                 render={({ value, onChange }) => (
                   <SliderInput
                     value={value}
+                    disabled={property.disabled}
                     onChange={onChange}
                     title={property.label}
                     max={property.max}
@@ -332,6 +348,7 @@ const FormSection = <
                 render={({ onChange, value }) => (
                   <RadioInput
                     containerStyle={property.containerStyle}
+                    disabled={property.disabled}
                     title={property.label}
                     value={value}
                     onChange={onChange}
@@ -372,6 +389,34 @@ const FormSection = <
                 setValue={setValue}
                 title={property.title}
                 containerStyle={property.containerStyle}
+              />
+            );
+            break;
+          }
+
+          case "switch": {
+            input = (
+              <Controller
+                name={property.name as FieldName<T>}
+                control={control}
+                rules={property.validationRules}
+                defaultValue={property.defaultValue}
+                render={({ onChange, value }) => (
+                  <SwitchInput
+                    containerStyle={property.containerStyle}
+                    title={property.label}
+                    value={value ?? false}
+                    disabled={property.disabled}
+                    onChange={onChange}
+                    error={undefined !== errors[property.name]}
+                    helperText={
+                      //@ts-ignore
+                      errors[property.name] && errors[property.name].message
+                    }
+                    falseLabel={property.falseLabel}
+                    trueLabel={property.trueLabel}
+                  />
+                )}
               />
             );
             break;

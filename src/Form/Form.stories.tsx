@@ -297,3 +297,59 @@ export const CohortExample = () => (
     />
   </div>
 );
+
+type ContionalFormData = {
+  isAgeRequired: boolean;
+  age?: number;
+  isNameInputDisabled: boolean;
+  name?: string;
+};
+
+const ConditionalTemplate: Story<FormProps<ContionalFormData>> = args => (
+  <Form<ContionalFormData> {...args} />
+);
+
+export const ConditionalValidationRules = ConditionalTemplate.bind({});
+
+ConditionalValidationRules.args = {
+  formStyle: undefined,
+  formContentContainerStyle: undefined,
+  displaySubmitButton: true,
+  title: "Conditional Validation rules",
+  submit,
+  properties: data => {
+    return [
+      {
+        type: "switch",
+        name: "isAgeRequired",
+        label: "Is age required ?",
+        falseLabel: "No",
+        trueLabel: "Yes"
+      },
+      {
+        type: "number",
+        name: "age",
+        label: "Age",
+        validationRules: {
+          required: {
+            value: data.isAgeRequired,
+            message: "This field is required"
+          }
+        }
+      },
+      {
+        type: "switch",
+        name: "isNameInputDisabled",
+        label: "Is name input disabled ?",
+        falseLabel: "No",
+        trueLabel: "Yes"
+      },
+      {
+        type: "text",
+        name: "name",
+        label: "Name",
+        disabled: data.isNameInputDisabled
+      }
+    ];
+  }
+};
