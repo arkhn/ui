@@ -9,12 +9,12 @@ type AutocompleteInputProps<
 > = {
   title?: string;
   name?: K;
-  defaultValue?: OptionType<T[K]>;
-  onChange: (value: OptionType<T[K]> | null) => void;
+  defaultValue?: OptionType;
+  onChange: (value: OptionType | null) => void;
   error?: boolean;
   helperText?: string;
-  options: OptionType<T[K]>[];
-  getSelectOptions?: (searchValue: string) => Promise<OptionType<T[K]>[]>;
+  options: OptionType[];
+  getSelectOptions?: (searchValue: string) => Promise<OptionType[]>;
   variant?: "standard" | "outlined" | "filled";
   containerStyle?: React.CSSProperties;
   multiple?: boolean;

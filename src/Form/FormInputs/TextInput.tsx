@@ -16,6 +16,7 @@ type TextInputProps<K extends FieldValues> = {
   password?: boolean;
   disabled?: boolean;
   endAdornment?: JSX.Element;
+  startAdornment?: JSX.Element;
 };
 
 const EyeIcon: React.FC<{ hide?: boolean; onClick?: () => void }> = ({
@@ -37,6 +38,7 @@ const TextInput = <K extends FieldValues>({
   variant,
   password,
   endAdornment,
+  startAdornment,
   containerStyle = {
     margin: "1em"
   },
@@ -57,6 +59,7 @@ const TextInput = <K extends FieldValues>({
           type: hideText ? "password" : inputProps.type
         }}
         InputProps={{
+          startAdornment,
           endAdornment:
             endAdornment ??
             (password ? (

@@ -77,6 +77,10 @@ export interface FormProps<T extends FieldValues = FieldValues> {
    * True to remove default submit button.
    */
   displaySubmitButton?: boolean;
+  /**
+   * Input trigger validation mode
+   */
+  mode?: "onBlur" | "onChange" | "onSubmit" | "onTouched" | "all";
 }
 
 const Form = <T extends FieldValues = FieldValues>({
@@ -87,6 +91,7 @@ const Form = <T extends FieldValues = FieldValues>({
   formHeader,
   formFooter,
   formId,
+  mode = "onSubmit",
   displaySubmitButton,
   formContentContainerStyle = {
     flex: 1,
@@ -99,10 +104,17 @@ const Form = <T extends FieldValues = FieldValues>({
     height: "100%"
   }
 }: PropsWithChildren<FormProps<T>>) => {
-  const { handleSubmit, register, errors, control, setValue, watch } = useForm<
-    T
-  >({
-    defaultValues
+  const {
+    handleSubmit,
+    register,
+    errors,
+    control,
+    setValue,
+    watch,
+    trigger
+  } = useForm<T>({
+    defaultValues,
+    mode
   });
   const _properties =
     typeof properties === "function" ? properties(watch()) : properties;
@@ -129,13 +141,21 @@ const Form = <T extends FieldValues = FieldValues>({
     >
       <div style={formContentContainerStyle}>
         {formHeader}
-        <FormSection<T, typeof register, typeof setValue>
+        <FormSection<
+          T,
+          typeof register,
+          typeof setValue,
+          typeof watch,
+          typeof trigger
+        >
           control={control}
           defaultValues={defaultValues}
           errors={errors}
           properties={_properties}
           register={register}
           setValue={setValue}
+          watch={watch}
+          trigger={trigger}
           title={!formHeader ? title : undefined}
         />
       </div>
@@ -144,12 +164,14 @@ const Form = <T extends FieldValues = FieldValues>({
   );
 };
 
-type RenderSectionProps<T extends FieldValues, R, S> = {
+type RenderSectionProps<T extends FieldValues, R, S, W, Tr> = {
   properties: FormInputProperty<T>[];
   register: R;
   errors: DeepMap<T, FieldError>;
   control: Control<T>;
   setValue: S;
+  watch: W;
+  trigger: Tr;
   defaultValues?: UnpackNestedValue<DeepPartial<T>>;
   containerStyle?: React.CSSProperties;
   title?: string;
@@ -157,7 +179,9 @@ type RenderSectionProps<T extends FieldValues, R, S> = {
 const FormSection = <
   T extends FieldValues,
   R extends (...props: any) => any,
-  S extends (...props: any) => any
+  S extends (...props: any) => any,
+  W extends (...props: any) => any,
+  Tr extends (...props: any) => any
 >({
   properties,
   register,
@@ -166,13 +190,19 @@ const FormSection = <
   defaultValues,
   setValue,
   title,
+  watch,
+  trigger,
   containerStyle = {
     padding: "1em",
     display: "flex",
     flex: 1,
     flexDirection: "column"
   }
-}: RenderSectionProps<T, R, S>) => {
+}: RenderSectionProps<T, R, S, W, Tr>) => {
+  const propertiesToWatch = properties.filter(
+    p => "onChangeTriggerInputValidation" in p
+  );
+
   useEffect(() => {
     const autocompleteProperties = properties.filter(
       property => property.type === "autocomplete"
@@ -185,6 +215,14 @@ const FormSection = <
       });
     }
   }, [register, properties]);
+
+  for (const property of propertiesToWatch) {
+    useEffect(() => {
+      if ("onChangeTriggerInputValidation" in property) {
+        trigger(property.onChangeTriggerInputValidation);
+      }
+    }, [watch(property.name), trigger]);
+  }
 
   return (
     <div style={containerStyle}>
@@ -207,6 +245,7 @@ const FormSection = <
                 type={property.type}
                 disabled={property.disabled}
                 endAdornment={property.endAdornment}
+                startAdornment={property.startAdornment}
                 helperText={
                   //@ts-ignore
                   errors[property.name] && errors[property.name].message
@@ -247,6 +286,11 @@ const FormSection = <
                       errors[property.name] && errors[property.name].message
                     }
                     options={property.selectOptions}
+                    noneValueId={
+                      "noneValueId" in property
+                        ? property.noneValueId
+                        : undefined
+                    }
                   />
                 )}
               />
@@ -380,7 +424,13 @@ const FormSection = <
 
           case "section": {
             input = (
-              <FormSection<T, typeof register, typeof setValue>
+              <FormSection<
+                T,
+                typeof register,
+                typeof setValue,
+                typeof watch,
+                typeof trigger
+              >
                 control={control}
                 defaultValues={defaultValues}
                 errors={errors}
@@ -389,6 +439,8 @@ const FormSection = <
                 setValue={setValue}
                 title={property.title}
                 containerStyle={property.containerStyle}
+                trigger={trigger}
+                watch={watch}
               />
             );
             break;

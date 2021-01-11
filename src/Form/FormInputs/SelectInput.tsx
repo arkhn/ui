@@ -14,9 +14,10 @@ type SelectInputProps<K extends FieldValues> = {
   title?: string;
   error?: boolean;
   helperText?: string;
-  options: OptionType<K>[];
-  onChange: (value: OptionType<K> | OptionType<K>[] | null) => void;
+  options: OptionType[];
+  onChange: (value: OptionType | OptionType[] | null) => void;
   containerStyle?: React.CSSProperties;
+  noneValueId?: string;
 } & SelectProps;
 
 const SelectInput = <K extends FieldValues>({
@@ -26,6 +27,7 @@ const SelectInput = <K extends FieldValues>({
   helperText,
   multiple,
   onChange,
+  noneValueId,
   containerStyle = {
     margin: "1em"
   },
@@ -40,7 +42,24 @@ const SelectInput = <K extends FieldValues>({
     if (multiple) {
       const values = event.target.value as string[];
       const selectedOptions = options.filter(opt => values.includes(opt.id));
-      onChange(selectedOptions);
+
+      if (!noneValueId) {
+        return onChange(selectedOptions);
+      }
+      const currentValue = selectProps.value as string[];
+      const noneInCurrentValues = currentValue.some(
+        value => value === noneValueId
+      );
+      const noneInNewValues = values.some(value => value === noneValueId);
+      if (values.length === 0 || (!noneInCurrentValues && noneInNewValues)) {
+        const noneValueOption = options.find(opt => opt.id === noneValueId);
+        noneValueOption && onChange([noneValueOption]);
+      } else {
+        const valueOptions = values
+          .map(id => options.find(opt => opt.id === id))
+          .filter((opt): opt is OptionType => opt?.id !== noneValueId);
+        onChange(valueOptions);
+      }
     } else {
       const value = event.target.value as string;
       const option = options.find(opt => opt.id === value);

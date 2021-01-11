@@ -14,11 +14,11 @@ type RadioInputProps<K extends FieldValues> = {
   title?: string;
   error?: boolean;
   helperText?: string;
-  options: OptionType<K>[];
-  onChange: (value: OptionType<K> | null) => void;
+  options: OptionType[];
+  onChange: (value: OptionType | null) => void;
   containerStyle?: React.CSSProperties;
   name?: keyof K;
-  value: OptionType<K> | null;
+  value: OptionType | null;
   disabled?: boolean;
 };
 

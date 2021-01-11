@@ -28,6 +28,7 @@ export type FormInputProperty<
       label?: string;
       validationRules?: ValidationRules;
       containerStyle?: React.CSSProperties;
+      onChangeTriggerInputValidation?: K | K[];
       disabled?: boolean;
       variant?: "standard" | "outlined" | "filled";
     } & (
@@ -46,22 +47,24 @@ type TextInput = {
   placeholder?: string;
   password?: boolean;
   endAdornment?: JSX.Element;
+  startAdornment?: JSX.Element;
 };
 
 type RadioInput<T> = {
   type: "radio";
   defaultValue?: string;
-  radioOptions: OptionType<T>[];
+  radioOptions: OptionType[];
 };
 
 type SelectInput<T> = {
   type: "select";
   defaultValue?: string;
-  selectOptions: OptionType<T>[];
+  selectOptions: OptionType[];
 };
-type MultiSelectInput<T extends OptionType<FieldValues>[]> = {
+type MultiSelectInput<T extends OptionType[]> = {
   type: "multiSelect";
   defaultValue?: string[];
+  noneValueId?: string;
   selectOptions: T;
 };
 
@@ -77,16 +80,17 @@ type DateInput = {
   type: "date";
 };
 
-export type OptionType<T extends Record<string, any>> = T & {
+export type OptionType = {
   id: string;
   label: string;
+  [key: string]: any;
 };
 
 type AutoComplete<T> = {
   type: "autocomplete";
-  autocompleteOptions: OptionType<T>[];
+  autocompleteOptions: OptionType[];
   multiple?: boolean;
-  getAutocompleteOptions?: (searchValue: string) => Promise<OptionType<T>[]>;
+  getAutocompleteOptions?: (searchValue: string) => Promise<OptionType[]>;
 };
 
 type SwitchInput = {
