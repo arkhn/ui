@@ -65,7 +65,7 @@ type MultiSelectInput<T extends OptionType[]> = {
   type: "multiSelect";
   defaultValue?: string[];
   noneValueId?: string;
-  selectOptions: T;
+  selectOptions: OptionType[];
 };
 
 type SliderInput<T extends number | [number, number]> = {
