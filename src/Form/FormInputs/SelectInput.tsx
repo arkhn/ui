@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   Select,
   MenuItem,
@@ -28,11 +28,19 @@ const SelectInput = <K extends FieldValues>({
   multiple,
   onChange,
   noneValueId,
+  variant,
   containerStyle = {
     margin: "1em"
   },
   ...selectProps
 }: SelectInputProps<K>) => {
+  const labelRef = useRef<HTMLLabelElement | null>(null);
+  const [labelWidth, setLabelWidth] = useState(0);
+
+  useEffect(() => {
+    labelRef.current && setLabelWidth(labelRef.current.clientWidth);
+  }, [labelRef]);
+
   const _onChange = (
     event: React.ChangeEvent<{
       name?: string | undefined;
@@ -68,8 +76,8 @@ const SelectInput = <K extends FieldValues>({
   };
 
   return (
-    <FormControl style={containerStyle}>
-      <InputLabel id={selectProps.name} error={error}>
+    <FormControl style={containerStyle} variant={variant} error={error}>
+      <InputLabel ref={labelRef} id={selectProps.name} error={error}>
         {title}
       </InputLabel>
       <Select
@@ -77,6 +85,7 @@ const SelectInput = <K extends FieldValues>({
         labelId={selectProps.name}
         multiple={multiple}
         error={error}
+        labelWidth={labelWidth}
         fullWidth
         onChange={_onChange}
       >

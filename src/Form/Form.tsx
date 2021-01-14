@@ -216,13 +216,13 @@ const FormSection = <
     }
   }, [register, properties]);
 
-  for (const property of propertiesToWatch) {
-    useEffect(() => {
+  useEffect(() => {
+    for (const property of propertiesToWatch) {
       if ("onChangeTriggerInputValidation" in property) {
         trigger(property.onChangeTriggerInputValidation);
       }
-    }, [watch(property.name), trigger]);
-  }
+    }
+  }, [propertiesToWatch.map(property => watch(property.name)), trigger]);
 
   return (
     <div style={containerStyle}>
