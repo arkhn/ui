@@ -3,6 +3,7 @@ import { FormControl, CircularProgress, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { FieldName, FieldValues } from "react-hook-form";
 import { OptionType } from "../InputTypes";
+
 type AutocompleteInputProps<
   T extends FieldValues,
   K extends FieldName<T> = FieldName<T>
@@ -19,6 +20,7 @@ type AutocompleteInputProps<
   containerStyle?: React.CSSProperties;
   multiple?: boolean;
   disabled?: boolean;
+  noOptionsText?: React.ReactNode;
 };
 const AutocompleteInput = <T extends FieldValues>({
   title,
@@ -34,21 +36,29 @@ const AutocompleteInput = <T extends FieldValues>({
   },
   variant,
   multiple,
-  disabled
+  disabled,
+  noOptionsText
 }: AutocompleteInputProps<T>) => {
   const [open, setOpen] = useState(false);
   const [stateOptions, setOptions] = useState<typeof defaultValue[]>(options);
   const [textValue, onChangeTextValue] = useState<string>("");
   const [requestBlocking, onRequestBlocking] = useState<boolean>(false);
-  const loading = open && stateOptions.length === 0;
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     let active = true;
     if (requestBlocking) return undefined;
-    getSelectOptions &&
-      getSelectOptions(textValue).then(newOptions => {
-        if (active) setOptions(newOptions);
-      });
+
+    if (getSelectOptions) {
+      setLoading(true);
+      getSelectOptions(textValue)
+        .then(newOptions => {
+          if (active) setOptions(newOptions);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
 
     return () => {
       active = false;
@@ -62,6 +72,7 @@ const AutocompleteInput = <T extends FieldValues>({
     <FormControl style={containerStyle} component="div">
       <Autocomplete<typeof defaultValue>
         open={open}
+        noOptionsText={noOptionsText}
         onOpen={() => setOpen(true)}
         onClose={() => setOpen(false)}
         getOptionLabel={option => option?.label ?? ""}

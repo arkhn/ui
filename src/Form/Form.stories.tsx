@@ -110,9 +110,8 @@ Default.args = {
               validationRules: {
                 required: "This field is required"
               },
-              autocompleteOptions: [
-                { toto: "bidule", id: "machin", label: "struc" }
-              ],
+              autocompleteOptions: [],
+              noOptionsText: "Could not find any matching countries",
               getAutocompleteOptions: getCountries
             },
             {

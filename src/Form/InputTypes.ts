@@ -90,6 +90,7 @@ type AutoComplete<T> = {
   type: "autocomplete";
   autocompleteOptions: OptionType[];
   multiple?: boolean;
+  noOptionsText?: React.ReactNode;
   getAutocompleteOptions?: (searchValue: string) => Promise<OptionType[]>;
 };
 

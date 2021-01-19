@@ -332,6 +332,7 @@ const FormSection = <
                 //@ts-ignore
                 getSelectOptions={property.getAutocompleteOptions}
                 variant={property.variant}
+                noOptionsText={property.noOptionsText}
                 defaultValue={defaultValues?.[property.name]}
                 disabled={property.disabled}
                 onChange={value =>
