@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import clsx from "clsx";
 import {
   makeStyles,
@@ -535,9 +535,13 @@ const SelectableTable: React.FC<SelectableTableProps> = ({
   rowEndButtons
 }) => {
   const classes = useStyles();
-  const [treeRows] = useState(
+  const [treeRows, setTreeRows] = useState(
     getRowParentId ? getTreeDataModel(rows, getRowParentId) : rows
   );
+
+  useEffect(() => {
+    setTreeRows(getRowParentId ? getTreeDataModel(rows, getRowParentId) : rows);
+  }, [rows, getRowParentId]);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked && selectedRowIds.length === 0) {
