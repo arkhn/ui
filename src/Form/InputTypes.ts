@@ -1,4 +1,8 @@
-import { ValidationRules, FieldValues, FieldName } from "react-hook-form";
+import {
+  RegisterOptions,
+  FieldValues,
+  ControllerRenderProps
+} from "react-hook-form";
 
 export type FormInputProperty<
   T extends FieldValues,
@@ -7,14 +11,8 @@ export type FormInputProperty<
   | {
       type: "custom";
       name: K;
-      validationRules?: ValidationRules;
-      renderInput: (inputProps: {
-        onChange: (...event: any[]) => void;
-        onBlur: () => void;
-        value: any;
-        name: FieldName<T>;
-        ref: React.MutableRefObject<any>;
-      }) => JSX.Element;
+      validationRules?: RegisterOptions;
+      renderInput: (field: ControllerRenderProps<T>) => JSX.Element;
     }
   | {
       type: "section";
@@ -26,7 +24,7 @@ export type FormInputProperty<
   | ({
       name: K;
       label?: string;
-      validationRules?: ValidationRules;
+      validationRules?: RegisterOptions;
       containerStyle?: React.CSSProperties;
       onChangeTriggerInputValidation?: K | K[];
       disabled?: boolean;

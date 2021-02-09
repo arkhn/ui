@@ -1,7 +1,7 @@
 import React from "react";
 import Enzyme, { shallow } from "enzyme";
 import Adapter from "enzyme-adapter-react-16";
-import { ScrollSync } from "react-virtualized";
+import { AutoSizer } from "react-virtualized";
 
 /* Component to test */
 import VirtualizedDnDGrid, {
@@ -48,7 +48,7 @@ const props: VirtualizedDnDGridProps = {
 describe("VirtualizedDnDGrid", () => {
   it("should render", () => {
     const wrapper = shallow(<VirtualizedDnDGrid {...props} />);
-    const scrollSync = wrapper.find(ScrollSync);
-    expect(scrollSync).toHaveLength(1);
+    const autoSizer = wrapper.find(AutoSizer);
+    expect(autoSizer).toHaveLength(1);
   });
 });
