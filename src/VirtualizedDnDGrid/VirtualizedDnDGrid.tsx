@@ -293,7 +293,17 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
     );
   };
 
-  const renderHeaderCell: GridCellRenderer = ({ columnIndex, style }) => {
+  const _headerCellRenderer = ({
+    provided,
+    snapshot,
+    column,
+    style
+  }: {
+    provided: DraggableProvided;
+    snapshot: DraggableStateSnapshot;
+    column: ColumnData;
+    style?: React.CSSProperties;
+  }) => {
     const {
       dataKey,
       isDragDisabled,
@@ -301,70 +311,61 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
       headerStyle,
       checkbox = true,
       ...otherColumnProps
-    } = columns[columnIndex];
+    } = column;
     return (
-      <Draggable
-        draggableId={dataKey}
-        index={columnIndex}
-        key={dataKey}
-        isDragDisabled={isDragDisabled}
+      <div
+        id={dataKey}
+        className={clsx(classes.draggableCell)}
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        style={{
+          ...headerStyle,
+          ...provided.draggableProps.style,
+          ...style
+        }}
       >
-        {(provided, snapshot) => (
-          <div
-            id={dataKey}
-            className={clsx(classes.draggableCell)}
-            ref={provided.innerRef}
-            {...provided.draggableProps}
-            style={{
-              ...headerStyle,
-              ...provided.draggableProps.style,
-              ...style
+        <div style={{ width: 42 }}>
+          {checkbox && (
+            <Checkbox
+              checked={
+                selectedColumnKeys.findIndex(key => key === dataKey) >= 0
+              }
+              onChange={() => {
+                handleHeaderCellClick(dataKey);
+              }}
+            />
+          )}
+        </div>
+        {headerCellRenderer(
+          {
+            dataKey,
+            isDragDisabled,
+            width: width - (columnResizeHandleWidth + 1) - checkboxWidth,
+            ...otherColumnProps
+          },
+          provided.dragHandleProps
+        )}
+        {!snapshot.isDragging && (
+          <ReactDraggable
+            axis="x"
+            defaultClassName="ReactDragHandle"
+            defaultClassNameDragging="ReactDragHandleActive"
+            onStop={(event, { x }) => {
+              const newWidth = width + x;
+              return handleResizeColumn({
+                dataKey,
+                newWidth: Math.max(newWidth, 150)
+              });
+            }}
+            position={{
+              x: 0,
+              y: 0
             }}
           >
-            <div style={{ width: 42 }}>
-              {checkbox && (
-                <Checkbox
-                  checked={
-                    selectedColumnKeys.findIndex(key => key === dataKey) >= 0
-                  }
-                  onChange={() => {
-                    handleHeaderCellClick(dataKey);
-                  }}
-                />
-              )}
-            </div>
-            {headerCellRenderer(
-              {
-                dataKey,
-                isDragDisabled,
-                width: width - (columnResizeHandleWidth + 1) - checkboxWidth,
-                ...otherColumnProps
-              },
-              provided.dragHandleProps
-            )}
-            {!snapshot.isDragging && (
-              <ReactDraggable
-                axis="x"
-                defaultClassName="ReactDragHandle"
-                defaultClassNameDragging="ReactDragHandleActive"
-                onStop={(event, { x }) => {
-                  const newWidth = width + x;
-                  return handleResizeColumn({
-                    dataKey,
-                    newWidth: Math.max(newWidth, 150)
-                  });
-                }}
-                position={{
-                  x: 0,
-                  y: 0
-                }}
-              >
-                <div className={clsx(classes.resizeHandle)} />
-              </ReactDraggable>
-            )}
-          </div>
+            <div className={clsx(classes.resizeHandle)} />
+          </ReactDraggable>
         )}
-      </Draggable>
+      </div>
     );
   };
 
@@ -399,43 +400,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                     rubric: DraggableRubric
                   ) => {
                     const column = columns[rubric.source.index];
-                    const {
-                      dataKey,
-                      width,
-                      isDragDisabled,
-                      ...otherColumnProps
-                    } = column;
-                    return (
-                      <div
-                        id={dataKey}
-                        className={clsx(classes.draggableCell)}
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                      >
-                        <div>
-                          <Checkbox
-                            checked={
-                              selectedColumnKeys.findIndex(
-                                key => key === dataKey
-                              ) >= 0
-                            }
-                            onChange={() => {
-                              handleHeaderCellClick(dataKey);
-                            }}
-                          />
-                        </div>
-                        {headerCellRenderer(
-                          {
-                            dataKey,
-                            isDragDisabled,
-                            width:
-                              width - columnResizeHandleWidth - checkboxWidth,
-                            ...otherColumnProps
-                          },
-                          provided.dragHandleProps
-                        )}
-                      </div>
-                    );
+                    return _headerCellRenderer({ provided, snapshot, column });
                   }}
                 >
                   {droppableProvided => (
@@ -464,7 +429,27 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                       scrollLeft={scrollLeft}
                       onScroll={onScroll}
                       height={headerHeight}
-                      cellRenderer={renderHeaderCell}
+                      cellRenderer={({ columnIndex, style }) => {
+                        const column = columns[columnIndex];
+                        const { dataKey, isDragDisabled } = column;
+                        return (
+                          <Draggable
+                            draggableId={dataKey}
+                            index={columnIndex}
+                            key={dataKey}
+                            isDragDisabled={isDragDisabled}
+                          >
+                            {(provided, snapshot) =>
+                              _headerCellRenderer({
+                                provided,
+                                column,
+                                snapshot,
+                                style
+                              })
+                            }
+                          </Draggable>
+                        );
+                      }}
                     />
                   )}
                 </Droppable>

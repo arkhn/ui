@@ -23,7 +23,10 @@ function createColumnAndRows(
       width: 200,
       label: `column ${columnIndex}`,
       dataKey: `column ${columnIndex}`,
-      isDragDisabled: false
+      isDragDisabled: false,
+      headerStyle: {
+        backgroundColor: "red"
+      }
     });
   }
 
