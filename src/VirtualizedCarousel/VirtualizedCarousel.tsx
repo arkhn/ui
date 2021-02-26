@@ -49,7 +49,7 @@ export interface VirtualizedCarouselProps {
   height?: string | number;
 }
 
-Modal.setAppElement("#root");
+if (process.env.NODE_ENV !== "test") Modal.setAppElement("#root");
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
