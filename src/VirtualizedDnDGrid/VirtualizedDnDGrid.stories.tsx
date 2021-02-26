@@ -99,7 +99,6 @@ const Template: Story<VirtualizedDnDGridProps> = props => {
         numeric={numeric}
         id={dataKey}
         onLabelEdited={value => onEditColumnName(dataKey, value)}
-        onDeleteClick={() => onDeleteColumn(dataKey)}
       />
     </div>
   );

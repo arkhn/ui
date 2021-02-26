@@ -1,14 +1,12 @@
 import React from "react";
-import Enzyme, { shallow } from "enzyme";
-import Adapter from "enzyme-adapter-react-16";
-import { AutoSizer } from "react-virtualized";
+import { render, cleanup, screen } from "@testing-library/react";
 
 /* Component to test */
 import VirtualizedDnDGrid, {
   VirtualizedDnDGridProps
 } from "./VirtualizedDnDGrid";
 
-Enzyme.configure({ adapter: new Adapter() });
+afterEach(cleanup);
 
 const props: VirtualizedDnDGridProps = {
   rowHeight: 50,
@@ -46,9 +44,9 @@ const props: VirtualizedDnDGridProps = {
 };
 
 describe("VirtualizedDnDGrid", () => {
-  it("should render", () => {
-    const wrapper = shallow(<VirtualizedDnDGrid {...props} />);
-    const autoSizer = wrapper.find(AutoSizer);
-    expect(autoSizer).toHaveLength(1);
+  it("should render header & body grids", async () => {
+    render(<VirtualizedDnDGrid {...props} />);
+    screen.getByRole("header-grid");
+    screen.getByRole("body-grid");
   });
 });
