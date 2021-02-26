@@ -159,7 +159,7 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
                     <ListItemIcon>
                       <EditIcon {...editIconProps} />
                     </ListItemIcon>
-                    <ListItemText primary="Edit" />
+                    <ListItemText primary="Rename" />
                   </ListItem>
                   {droppableListItems &&
                     droppableListItems.map(
