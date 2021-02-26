@@ -206,6 +206,13 @@ export interface VirtualizedDnDGridProps {
    *Number of rows to display
    */
   rowCount?: number;
+  /**
+   * Rendering function displayed in cell tooltip instead of the default one.
+   */
+  renderCustomTooltipContent?: (cellProps: {
+    rowIndex: number;
+    columnIndex: number;
+  }) => JSX.Element;
 }
 
 const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
@@ -225,7 +232,8 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
   handleResizeColumn,
   onSelectHeaderCell,
   cellRenderer,
-  rowCount
+  rowCount,
+  renderCustomTooltipContent
 }) => {
   const classes = useStyles();
   const mainGridRef = useRef<Grid>(null);
@@ -241,7 +249,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
     setScrollLeft(scrollLeft);
   };
 
-  const renderCell: GridCellRenderer = ({
+  const _renderCell: GridCellRenderer = ({
     rowIndex,
     columnIndex,
     key,
@@ -279,9 +287,13 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
             arrow
             enterDelay={tooltipEnterDelay}
             title={
-              <span className={classes.tooltipSpan}>
-                {data[rowIndex][dataKey]}
-              </span>
+              renderCustomTooltipContent ? (
+                renderCustomTooltipContent({ rowIndex, columnIndex })
+              ) : (
+                <span className={classes.tooltipSpan}>
+                  {data[rowIndex][dataKey]}
+                </span>
+              )
             }
           >
             {spanDataValue}
@@ -383,7 +395,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
 
   return (
     <div style={{ width, height }}>
-      <AutoSizer>
+      <AutoSizer data-testid="header-grid">
         {autoSizerProps => {
           const autoSizerHeight = autoSizerProps.height;
           const autoSizerWidth = autoSizerProps.width;
@@ -405,6 +417,7 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
                 >
                   {droppableProvided => (
                     <Grid
+                      role="header-grid"
                       rowCount={1}
                       columnCount={columns.length}
                       className={clsx(
@@ -456,8 +469,9 @@ const VirtualizedDnDGrid: React.FC<VirtualizedDnDGridProps> = ({
               </DragDropContext>
               <Grid
                 aria-label="VirtualizedDragAndropGrid"
+                role="body-grid"
                 ref={mainGridRef}
-                cellRenderer={renderCell}
+                cellRenderer={_renderCell}
                 columnCount={columns.length}
                 columnWidth={columnWidthGetter}
                 height={autoSizerHeight - headerHeight}
