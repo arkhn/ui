@@ -63,8 +63,7 @@ describe("Form builder tests", () => {
         properties={[
           {
             type: "text",
-            name: "name",
-            validationRules: { required: true }
+            name: "name"
           }
         ]}
         submit={submit}
@@ -77,7 +76,10 @@ describe("Form builder tests", () => {
     await waitFor(() => {
       expect(submit).toHaveBeenCalledTimes(1);
     });
-    expect(submit).toHaveBeenCalledWith({ name: "hello world" });
+    expect(submit).toHaveBeenCalledWith(
+      { name: "hello world" },
+      expect.anything()
+    );
   });
 
   it("should invalidate form", async () => {
