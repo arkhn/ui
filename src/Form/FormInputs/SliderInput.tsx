@@ -46,6 +46,7 @@ const SliderInput = <T extends number | [number, number]>({
   ) => {
     onChange(value as T);
   };
+  const _getAriaLabel = (index: number) => `${name} ${index}`;
   return (
     <FormControl style={containerStyle}>
       <FormLabel error={error}>{title}</FormLabel>
@@ -57,6 +58,7 @@ const SliderInput = <T extends number | [number, number]>({
         disabled={disabled}
         max={max}
         min={min}
+        getAriaLabel={_getAriaLabel}
         defaultValue={
           undefined !== defaultValue
             ? defaultValue

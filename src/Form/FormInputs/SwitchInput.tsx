@@ -51,6 +51,9 @@ const SwitchInput = <K extends FieldValues>({
             disabled={disabled}
             onChange={(event, checked) => onChange(checked)}
             name={name}
+            inputProps={{
+              "aria-label": name
+            }}
           />
         </Grid>
         <Grid item>

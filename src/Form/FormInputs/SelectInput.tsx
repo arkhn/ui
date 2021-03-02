@@ -88,6 +88,7 @@ const SelectInput = <K extends FieldValues>({
         labelWidth={labelWidth}
         fullWidth
         onChange={_onChange}
+        inputProps={{ "aria-label": selectProps.name }}
       >
         {options.map(option => (
           <MenuItem key={option.id} value={option.id}>

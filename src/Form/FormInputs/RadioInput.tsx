@@ -52,6 +52,7 @@ const RadioInput = <K extends FieldValues>({
         name={name}
         value={value ? value.id : null}
         onChange={_onChange}
+        aria-label={name}
       >
         {options.map(option => (
           <FormControlLabel

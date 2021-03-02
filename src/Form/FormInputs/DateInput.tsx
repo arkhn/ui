@@ -42,6 +42,9 @@ const DateInput = React.forwardRef(
               "aria-label": "change date"
             }}
             value={value ?? null}
+            inputProps={{
+              "aria-label": name
+            }}
             {...props}
           />
         </MuiPickersUtilsProvider>

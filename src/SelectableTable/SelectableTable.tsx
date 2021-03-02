@@ -253,14 +253,14 @@ type TableRowProps = {
   level?: number;
   isSelectedForPreview?: (rowId: string) => boolean;
   row: TreeTableDataType;
-  onRowClick: (rowId: string) => void;
+  onRowClick?: (rowId: string) => void;
   isSelected?: (rowId: string) => boolean;
   labelId?: string;
   onClickCheckbox: (rowId: string[]) => void;
   columns: SelectableTableColumn[];
   endButtons?: RowButton[];
   collapsible?: boolean;
-  onEditRowAttribute: (
+  onEditRowAttribute?: (
     rowId: string,
     rowAttributeKey: TableDataTypeKeys,
     value: string
@@ -307,7 +307,7 @@ export const TableRow: React.FC<TableRowProps> = ({
         selected={isSelectedForPreview && isSelectedForPreview(row.id)}
         key={row.id}
         onClick={() => {
-          onRowClick(row.id);
+          onRowClick && onRowClick(row.id);
         }}
       >
         <TableCell
@@ -358,7 +358,8 @@ export const TableRow: React.FC<TableRowProps> = ({
               <EditInput
                 value={row[column.rowAttributeKey]}
                 onChange={value => {
-                  onEditRowAttribute(row.id, column.rowAttributeKey, value);
+                  onEditRowAttribute &&
+                    onEditRowAttribute(row.id, column.rowAttributeKey, value);
                 }}
               />
             </TableCell>
@@ -458,27 +459,39 @@ export interface SelectableTableProps {
   /**
    * Id of the row which has focus
    */
-  focusedRowId: string | null;
+  focusedRowId?: string | null;
   /**
    * List of row ids selected with the checkbox
    */
-  selectedRowIds: string[];
+  selectedRowIds?: string[];
   /**
    * Text to display when rows are selected (with the checkbox). This will replace the 'tableTitle' value.
    */
   toolBarDynamicTitle?: string;
   /**
+   * Row rendering function. When defined, called instead of internal use of Row component.
+   */
+  renderRow?: (rowParams: { id: string; index: number }) => React.ReactNode;
+  /**
+   * Header rendering function. When defined, called instead of internal use of SelectableTableHead component.
+   */
+  renderHeader?: () => React.ReactNode;
+  /**
+   * Toolbar rendering function. When defined, called instead of internal use of TableToolbar component.
+   */
+  renderToolbar?: () => React.ReactNode;
+  /**
    * Called when the user clicks on a checkbox
    */
-  onChangeSelectedRows: (rowIds: string[]) => void;
+  onChangeSelectedRows?: (rowIds: string[]) => void;
   /**
    * Called when the user clicks on a row
    */
-  onRowClick: (rowId: string) => void;
+  onRowClick?: (rowId: string) => void;
   /**
    * Called when a row attribute is changed via the input
    */
-  onEditRowAttribute: (
+  onEditRowAttribute?: (
     rowId: string,
     rowAttributeKey: TableDataTypeKeys,
     value: string
@@ -532,7 +545,9 @@ const SelectableTable: React.FC<SelectableTableProps> = ({
   onRowClick,
   onEditRowAttribute,
   getRowParentId,
-  rowEndButtons
+  rowEndButtons,
+  renderRow,
+  renderHeader
 }) => {
   const classes = useStyles();
   const [treeRows, setTreeRows] = useState(
@@ -544,40 +559,43 @@ const SelectableTable: React.FC<SelectableTableProps> = ({
   }, [rows, getRowParentId]);
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked && selectedRowIds.length === 0) {
+    if (event.target.checked && selectedRowIds && selectedRowIds.length === 0) {
       const newSelectedRows = rows.map(row => row.id);
-      onChangeSelectedRows(newSelectedRows);
+      onChangeSelectedRows && onChangeSelectedRows(newSelectedRows);
       return;
     }
 
-    onChangeSelectedRows([]);
+    onChangeSelectedRows && onChangeSelectedRows([]);
   };
 
   const handleClick = (ids: string[]) => {
-    let newSelected = [...selectedRowIds];
-    const clickTargetId = ids[0];
+    if (selectedRowIds && onChangeSelectedRows) {
+      let newSelected = [...selectedRowIds];
+      const clickTargetId = ids[0];
 
-    if (undefined !== clickTargetId) {
-      const shouldAddClickTarget = newSelected.indexOf(clickTargetId) < 0;
+      if (undefined !== clickTargetId) {
+        const shouldAddClickTarget = newSelected.indexOf(clickTargetId) < 0;
 
-      //If we add the click target, we add all other ids (that are presumably its children)
-      if (shouldAddClickTarget) {
-        for (const id of ids) {
-          const selectedIndex = newSelected.indexOf(id);
-          if (selectedIndex === -1) {
-            newSelected.push(id);
+        //If we add the click target, we add all other ids (that are presumably its children)
+        if (shouldAddClickTarget) {
+          for (const id of ids) {
+            const selectedIndex = newSelected.indexOf(id);
+            if (selectedIndex === -1) {
+              newSelected.push(id);
+            }
           }
+        } else {
+          //Else we only remove the click target
+          newSelected = newSelected.filter(id => id !== clickTargetId);
         }
-      } else {
-        //Else we only remove the click target
-        newSelected = newSelected.filter(id => id !== clickTargetId);
       }
-    }
 
-    onChangeSelectedRows(newSelected);
+      onChangeSelectedRows(newSelected);
+    }
   };
 
-  const isSelected = (id: string) => selectedRowIds.indexOf(id) !== -1;
+  const isSelected = (id: string): boolean =>
+    (selectedRowIds && selectedRowIds.indexOf(id) !== -1) ?? false;
   const isSelectedForPreview = (id: string) => focusedRowId === id;
 
   return (
@@ -586,7 +604,9 @@ const SelectableTable: React.FC<SelectableTableProps> = ({
         tableTitle={tableTitle}
         buttons={buttons}
         toolBarDynamicTitle={toolBarDynamicTitle}
-        selectedRows={rows.filter(row => selectedRowIds.indexOf(row.id) !== -1)}
+        selectedRows={rows.filter(
+          row => selectedRowIds && selectedRowIds.indexOf(row.id) !== -1
+        )}
       />
       <TableContainer className={classes.container}>
         <Table
@@ -596,32 +616,36 @@ const SelectableTable: React.FC<SelectableTableProps> = ({
           size="medium"
           stickyHeader
         >
-          <SelectableTableHead
-            classes={classes}
-            numSelected={selectedRowIds.length}
-            onSelectAllClick={handleSelectAllClick}
-            rowCount={rows.length}
-            columns={columns}
-            rowEndButtonsLength={rowEndButtons?.length}
-            collapsible={undefined !== getRowParentId}
-          />
+          {renderHeader ? (
+            renderHeader()
+          ) : (
+            <SelectableTableHead
+              classes={classes}
+              numSelected={selectedRowIds && selectedRowIds.length}
+              onSelectAllClick={handleSelectAllClick}
+              rowCount={rows.length}
+              columns={columns}
+              rowEndButtonsLength={rowEndButtons?.length}
+              collapsible={undefined !== getRowParentId}
+            />
+          )}
           <TableBody>
-            {treeRows.map(row => {
-              return (
-                <TableRow
-                  key={row.id}
-                  columns={columns}
-                  onClickCheckbox={handleClick}
-                  onEditRowAttribute={onEditRowAttribute}
-                  onRowClick={onRowClick}
-                  row={row}
-                  isSelectedForPreview={isSelectedForPreview}
-                  isSelected={isSelected}
-                  endButtons={rowEndButtons}
-                  collapsible={undefined !== getRowParentId}
-                />
-              );
-            })}
+            {renderRow
+              ? treeRows.map((row, index) => renderRow({ id: row.id, index }))
+              : treeRows.map(row => (
+                  <TableRow
+                    key={row.id}
+                    columns={columns}
+                    onClickCheckbox={handleClick}
+                    onEditRowAttribute={onEditRowAttribute}
+                    onRowClick={onRowClick}
+                    row={row}
+                    isSelectedForPreview={isSelectedForPreview}
+                    isSelected={isSelected}
+                    endButtons={rowEndButtons}
+                    collapsible={undefined !== getRowParentId}
+                  />
+                ))}
           </TableBody>
         </Table>
       </TableContainer>

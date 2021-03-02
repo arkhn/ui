@@ -97,7 +97,7 @@ const AutocompleteInput = <T extends FieldValues>({
             id={name}
             label={title}
             fullWidth
-            inputProps={{ ...params.inputProps }}
+            inputProps={{ ...params.inputProps, "aria-label": name }}
             error={error}
             helperText={helperText}
             variant={variant}

@@ -56,7 +56,8 @@ const TextInput = <K extends FieldValues>({
         variant={variant}
         fullWidth
         inputProps={{
-          type: hideText ? "password" : inputProps.type
+          type: hideText ? "password" : inputProps.type,
+          "aria-label": inputProps.name
         }}
         InputProps={{
           startAdornment,
