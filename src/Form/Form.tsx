@@ -92,7 +92,7 @@ const Form = <T extends FieldValues = FieldValues>({
   formFooter,
   formId,
   mode = "onSubmit",
-  displaySubmitButton,
+  displaySubmitButton = true,
   formContentContainerStyle = {
     flex: 1,
     overflow: "auto"

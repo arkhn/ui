@@ -13,8 +13,10 @@ type FormData = {
 
 const submit = jest.fn();
 
+beforeEach(submit.mockClear);
+
 describe("Form builder tests", () => {
-  it("should call submit", async () => {
+  it("should call submit (internal submit button)", async () => {
     render(
       <Form<FormData>
         properties={[
@@ -24,7 +26,6 @@ describe("Form builder tests", () => {
           }
         ]}
         submit={submit}
-        displaySubmitButton
       />
     );
 
@@ -33,6 +34,51 @@ describe("Form builder tests", () => {
     await waitFor(() => {
       expect(submit).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it("should call submit (external submit button)", async () => {
+    render(
+      <Form<FormData>
+        properties={[
+          {
+            type: "text",
+            name: "name"
+          }
+        ]}
+        submit={submit}
+        formFooter={<button type="submit">submit</button>}
+      />
+    );
+
+    userEvent.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(submit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("should submit with data", async () => {
+    const mockSubmit = jest.fn();
+    render(
+      <Form<FormData>
+        properties={[
+          {
+            type: "text",
+            name: "name",
+            validationRules: { required: true }
+          }
+        ]}
+        submit={mockSubmit}
+      />
+    );
+
+    userEvent.type(screen.getByRole("textbox"), "hello world");
+    userEvent.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(submit).toHaveBeenCalledTimes(1);
+    });
+    expect(mockSubmit).toHaveBeenCalledWith({ name: "hello world" });
   });
 
   it("should invalidate form", async () => {
@@ -54,7 +100,10 @@ describe("Form builder tests", () => {
 
     userEvent.click(screen.getByRole("button"));
 
-    // Find invalidated inputs
-    // expect(await screen.findAllByRole("alert")).toHaveLength(1);
+    const input = screen.getByRole("textbox");
+    await waitFor(() => {
+      expect(input).toBeInvalid;
+    });
+    expect(submit).toHaveBeenCalledTimes(0);
   });
 });
