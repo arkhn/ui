@@ -369,6 +369,7 @@ const FormSection = <
                     max={property.max}
                     min={property.min}
                     valueLabelDisplay={property.valueLabelDisplay}
+                    valueLabelFormat={property.valueLabelFormat}
                     defaultValue={property.defaultValue}
                     containerStyle={property.containerStyle}
                     error={undefined !== errors[property.name]}

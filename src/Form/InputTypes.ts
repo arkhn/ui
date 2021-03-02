@@ -72,6 +72,9 @@ type SliderInput<T extends number | [number, number]> = {
   min?: number;
   defaultValue?: T;
   valueLabelDisplay?: "on" | "off" | "auto";
+  valueLabelFormat?:
+    | string
+    | ((value: number, index: number) => React.ReactNode);
 };
 
 type DateInput = {
