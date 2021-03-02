@@ -11,7 +11,7 @@ module.exports = {
     es6: true,
     browser: true
   },
-  plugins: ["@typescript-eslint", "prettier"],
+  plugins: ["@typescript-eslint", "prettier", "jest-dom", "testing-library"],
   ignorePatterns: [],
   rules: {
     "no-underscore-dangle": 0,
