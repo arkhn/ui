@@ -58,7 +58,6 @@ describe("Form builder tests", () => {
   });
 
   it("should submit with data", async () => {
-    const mockSubmit = jest.fn();
     render(
       <Form<FormData>
         properties={[
@@ -68,7 +67,7 @@ describe("Form builder tests", () => {
             validationRules: { required: true }
           }
         ]}
-        submit={mockSubmit}
+        submit={submit}
       />
     );
 
@@ -78,7 +77,7 @@ describe("Form builder tests", () => {
     await waitFor(() => {
       expect(submit).toHaveBeenCalledTimes(1);
     });
-    expect(mockSubmit).toHaveBeenCalledWith({ name: "hello world" });
+    expect(submit).toHaveBeenCalledWith({ name: "hello world" });
   });
 
   it("should invalidate form", async () => {
