@@ -60,6 +60,10 @@ export type LabelDroppableMenuProps = {
     disabled?: boolean;
   }[];
   onLabelEdited?: (value: string) => void;
+  /**
+   * Disables "Rename" list item
+   */
+  disableEdit?: boolean;
   editIconProps?: React.ComponentProps<typeof EditIcon>;
 };
 
@@ -69,7 +73,8 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
   id,
   droppableListItems,
   onLabelEdited,
-  editIconProps
+  editIconProps,
+  disableEdit
 }) => {
   const classes = useStyles();
   const [editingLabel, setEditingLabel] = React.useState(label);
@@ -151,6 +156,7 @@ const LabelDroppableMenu: React.FC<LabelDroppableMenuProps> = ({
                 <List>
                   <ListItem
                     button
+                    disabled={disableEdit}
                     onClick={() => {
                       popupState.close();
                       setTimeout(toggleEditMode);
