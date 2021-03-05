@@ -54,10 +54,10 @@ type RadioInput<T> = {
   radioOptions: OptionType[];
 };
 
-type SelectInput<T> = {
+type SelectInput<T extends string> = {
   type: "select";
   defaultValue?: string;
-  selectOptions: OptionType[];
+  selectOptions: OptionType<T>[];
 };
 type MultiSelectInput<T extends OptionType[]> = {
   type: "multiSelect";
@@ -81,8 +81,8 @@ type DateInput = {
   type: "date";
 };
 
-export type OptionType = {
-  id: string;
+export type OptionType<T extends string = string> = {
+  id: T;
   label: string;
   [key: string]: any;
 };

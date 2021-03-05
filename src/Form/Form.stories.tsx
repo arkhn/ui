@@ -16,10 +16,10 @@ type FormData = {
   lastName: string;
   address: string;
   age: number;
-  sexe: { id: string; label: string };
+  sexe: "0" | "1";
   birthDate: Date;
   country: { id: string; label: string; toto: string };
-  colors: { id: string; label: string; html: string }[];
+  colors: ("blue" | "red" | "green" | "yellow")[];
   mark: number;
   ageRange: [number, number];
 };
@@ -51,13 +51,7 @@ Default.args = {
   defaultValues: {
     firstName: "Henri",
     lastName: "Dupont",
-    colors: [
-      {
-        id: "1",
-        label: "blue",
-        html: "#BABABA"
-      }
-    ],
+    colors: ["blue"],
     mark: 50,
     ageRange: [35, 40]
   },
@@ -120,17 +114,17 @@ Default.args = {
               variant: "outlined",
               selectOptions: [
                 {
-                  id: "1",
+                  id: "blue",
                   label: "blue",
                   html: "#BABABA"
                 },
                 {
-                  id: "2",
+                  id: "red",
                   label: "red",
                   html: "#B0B0B0"
                 },
                 {
-                  id: "3",
+                  id: "yellow",
                   label: "yellow",
                   html: "#010101"
                 }
@@ -178,8 +172,8 @@ Default.args = {
           variant: "outlined",
           defaultValue: "male",
           selectOptions: [
-            { id: "1", label: "male" },
-            { id: "2", label: "female" }
+            { id: "0", label: "male" },
+            { id: "1", label: "female" }
           ]
         },
         {

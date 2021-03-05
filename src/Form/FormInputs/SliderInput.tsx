@@ -19,6 +19,7 @@ type SliderProps<T extends number | [number, number]> = {
   valueLabelDisplay?: "on" | "off" | "auto";
   containerStyle?: React.CSSProperties;
   disabled?: boolean;
+  name?: string;
   valueLabelFormat?:
     | string
     | ((value: number, index: number) => React.ReactNode);
@@ -36,6 +37,7 @@ const SliderInput = <T extends number | [number, number]>({
   valueLabelDisplay,
   valueLabelFormat,
   disabled,
+  name,
   containerStyle = {
     margin: "1em"
   }

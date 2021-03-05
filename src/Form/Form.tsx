@@ -264,20 +264,14 @@ const FormSection = <
                 rules={property.validationRules}
                 defaultValue={property.defaultValue}
                 render={({ onChange, value, ref, name }) => (
-                  <SelectInput
+                  <SelectInput<typeof value>
                     containerStyle={property.containerStyle}
                     disabled={property.disabled}
                     title={property.label}
                     inputRef={ref}
                     name={name}
                     variant={property.variant}
-                    value={
-                      property.type === "multiSelect"
-                        ? Array.isArray(value)
-                          ? value.map(val => val.id)
-                          : []
-                        : value?.id ?? ""
-                    }
+                    value={value}
                     onChange={onChange}
                     multiple={property.type === "multiSelect"}
                     error={undefined !== errors[property.name]}
@@ -327,9 +321,7 @@ const FormSection = <
           case "autocomplete": {
             input = (
               <AutocompleteInput<T>
-                //@ts-ignore
                 options={property.autocompleteOptions}
-                //@ts-ignore
                 getSelectOptions={property.getAutocompleteOptions}
                 variant={property.variant}
                 noOptionsText={property.noOptionsText}
