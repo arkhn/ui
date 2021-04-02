@@ -101,3 +101,5 @@ type SwitchInput = {
   falseLabel?: string;
   trueLabel?: string;
 };
+
+export type ValidationError<T> = { [K in keyof T]?: string[] };

@@ -48,6 +48,10 @@ export const Default = Template.bind({});
 Default.args = {
   formStyle: undefined,
   formContentContainerStyle: undefined,
+  validationErrors: {
+    firstName: ["machin", "truc"],
+    lastName: ["last name is not wrong"]
+  },
   defaultValues: {
     firstName: "Henri",
     lastName: "Dupont",
