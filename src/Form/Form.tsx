@@ -117,7 +117,8 @@ const Form = <T extends FieldValues = FieldValues>({
     control,
     setValue,
     watch,
-    trigger
+    trigger,
+    reset
   } = useForm<T>({
     defaultValues,
     mode
@@ -137,6 +138,10 @@ const Form = <T extends FieldValues = FieldValues>({
       });
     }
   }, [register, _properties]);
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [reset, defaultValues]);
 
   return (
     <form
