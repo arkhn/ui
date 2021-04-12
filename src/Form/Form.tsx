@@ -260,7 +260,10 @@ const FormSection = <
                 title={property.label}
                 name={property.name}
                 containerStyle={property.containerStyle}
-                inputRef={register(property.validationRules)}
+                inputRef={register({
+                  ...property.validationRules,
+                  valueAsNumber: property.type === "number"
+                })}
                 placeholder={property.placeholder}
                 error={isInputError}
                 variant={property.variant}
